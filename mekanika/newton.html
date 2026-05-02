@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hukum Newton - simuphys</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --surface: #f8fcfc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Navigasi */
+        nav {
+            padding: 1rem 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover { color: var(--primary); }
+        .logo-small { font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+
+        /* Main Content */
+        .container {
+            padding: 40px 10%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            margin-bottom: 30px;
+        }
+
+        .header-section h1 {
+            font-size: 2rem;
+            color: var(--text);
+        }
+
+        .header-section p {
+            color: var(--text-light);
+        }
+
+        /* Simulator Layout */
+        .simulator-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        /* Canvas Area */
+        .canvas-container {
+            background: var(--surface);
+            border: 2px solid #eee;
+            border-radius: 16px;
+            padding: 20px;
+            position: relative;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        canvas {
+            width: 100%;
+            height: 300px;
+            background: white;
+            border-radius: 8px;
+            border: 1px dashed #ccc;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 16px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .value-badge {
+            background: var(--secondary);
+            color: var(--text);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        /* Custom Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 2px 6px rgba(21, 181, 176, 0.4);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #e0e0e0;
+            border-radius: 4px;
+        }
+
+        /* Data Dashboard */
+        .data-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: auto;
+        }
+
+        .data-card {
+            background: var(--surface);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #eee;
+        }
+
+        .data-card .label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .data-card .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .btn-play {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-play:hover { background: #129e9a; }
+
+        .btn-reset {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-reset:hover { background: #e699a2; }
+
+        @media (max-width: 992px) {
+            .simulator-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="back-btn">
+            <i data-lucide="chevron-left"></i> Modul Mekanika
+        </a>
+        <div class="logo-small">
+            <i data-lucide="atom"></i> simuphys
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header-section">
+            <h1>Hukum II Newton: Simulasi Dinamika</h1>
+            <p>Amati bagaimana massa benda dan gaya yang diberikan mempengaruhi percepatan secara langsung.</p>
+        </div>
+
+        <div class="simulator-grid">
+            <div class="canvas-container">
+                <canvas id="simCanvas"></canvas>
+            </div>
+
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="control-header">
+                        <span>Gaya Dorong (F)</span>
+                        <span class="value-badge" id="forceVal">10 N</span>
+                    </div>
+                    <input type="range" id="forceSlider" min="-50" max="50" value="10">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <span>Massa Benda (m)</span>
+                        <span class="value-badge" id="massVal">5 kg</span>
+                    </div>
+                    <input type="range" id="massSlider" min="1" max="20" value="5">
+                </div>
+
+                <div class="data-dashboard">
+                    <div class="data-card">
+                        <span class="label">Percepatan (a)</span>
+                        <span class="value" id="accelDisplay">2.00</span>
+                        <span style="font-size: 0.8rem; color: var(--text-light);">m/s²</span>
+                    </div>
+                    <div class="data-card">
+                        <span class="label">Kecepatan (v)</span>
+                        <span class="value" id="velDisplay">0.00</span>
+                        <span style="font-size: 0.8rem; color: var(--text-light);">m/s</span>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn-play" id="playBtn">
+                        <i data-lucide="play"></i> Mulai
+                    </button>
+                    <button class="btn-reset" id="resetBtn">
+                        <i data-lucide="rotate-ccw"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inisialisasi Ikon
+        lucide.createIcons();
+
+        // Canvas Setup
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Handle resolusi canvas agar tajam
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // State Variabel Fisika
+        let isPlaying = false;
+        let mass = 5;       // kg
+        let force = 10;     // Newton
+        let acceleration = 0; // m/s^2
+        let velocity = 0;   // m/s
+        let position = 50;  // pixel (posisi awal)
+        
+        let lastTime = 0;
+        const pixelsPerMeter = 20; // Skala visual
+
+        // DOM Elements
+        const forceSlider = document.getElementById('forceSlider');
+        const massSlider = document.getElementById('massSlider');
+        const forceVal = document.getElementById('forceVal');
+        const massVal = document.getElementById('massVal');
+        const accelDisplay = document.getElementById('accelDisplay');
+        const velDisplay = document.getElementById('velDisplay');
+        const playBtn = document.getElementById('playBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Update Kalkulasi Dasar
+        function updatePhysicsState() {
+            force = parseFloat(forceSlider.value);
+            mass = parseFloat(massSlider.value);
+            acceleration = force / mass;
+            
+            forceVal.innerText = `${force} N`;
+            massVal.innerText = `${mass} kg`;
+            accelDisplay.innerText = Math.abs(acceleration).toFixed(2);
+        }
+
+        // Event Listeners UI
+        forceSlider.addEventListener('input', updatePhysicsState);
+        massSlider.addEventListener('input', updatePhysicsState);
+
+        playBtn.addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                playBtn.innerHTML = '<i data-lucide="pause"></i> Jeda';
+                lastTime = performance.now();
+                requestAnimationFrame(gameLoop);
+            } else {
+                playBtn.innerHTML = '<i data-lucide="play"></i> Lanjut';
+            }
+            lucide.createIcons();
+        });
+
+        resetBtn.addEventListener('click', () => {
+            isPlaying = false;
+            position = 50;
+            velocity = 0;
+            playBtn.innerHTML = '<i data-lucide="play"></i> Mulai';
+            lucide.createIcons();
+            updatePhysicsState();
+            velDisplay.innerText = "0.00";
+            draw();
+        });
+
+        // Menggambar Frame
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Gambar Lantai (Garis putus-putus)
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height - 40);
+            ctx.lineTo(canvas.width, canvas.height - 40);
+            ctx.strokeStyle = '#ccc';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([10, 10]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Ukuran kotak dinamis berdasarkan massa
+            const boxSize = 40 + (mass * 2);
+            const boxY = canvas.height - 40 - boxSize;
+
+            // Gambar Balok
+            ctx.fillStyle = '#15b5b0'; // Primary color
+            ctx.fillRect(position, boxY, boxSize, boxSize);
+            
+            // Teks Massa di dalam balok
+            ctx.fillStyle = 'white';
+            ctx.font = '600 14px Poppins';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`${mass}kg`, position + boxSize/2, boxY + boxSize/2);
+
+            // Gambar Vektor Gaya (Panah)
+            if (force !== 0) {
+                const arrowLength = Math.abs(force) * 2;
+                const arrowY = boxY + boxSize / 2;
+                
+                ctx.beginPath();
+                if (force > 0) {
+                    // Dorong ke kanan
+                    ctx.moveTo(position + boxSize, arrowY);
+                    ctx.lineTo(position + boxSize + arrowLength, arrowY);
+                    ctx.lineTo(position + boxSize + arrowLength - 10, arrowY - 5);
+                    ctx.moveTo(position + boxSize + arrowLength, arrowY);
+                    ctx.lineTo(position + boxSize + arrowLength - 10, arrowY + 5);
+                } else {
+                    // Dorong ke kiri
+                    ctx.moveTo(position, arrowY);
+                    ctx.lineTo(position - arrowLength, arrowY);
+                    ctx.lineTo(position - arrowLength + 10, arrowY - 5);
+                    ctx.moveTo(position - arrowLength, arrowY);
+                    ctx.lineTo(position - arrowLength + 10, arrowY + 5);
+                }
+                
+                ctx.strokeStyle = '#f9aab4'; // Accent color
+                ctx.lineWidth = 4;
+                ctx.stroke();
+            }
+        }
+
+        // Loop Animasi Fisika
+        function gameLoop(timestamp) {
+            if (!isPlaying) return;
+
+            const deltaTime = (timestamp - lastTime) / 1000; // dalam detik
+            lastTime = timestamp;
+
+            // Update fisika (Kinematika dasar: v = v0 + at, x = x0 + vt)
+            velocity += acceleration * deltaTime;
+            
+            // Konversi pergerakan meter ke pixel
+            position += (velocity * pixelsPerMeter) * deltaTime;
+
+            // Batasan layar agar balok tidak hilang (memantul secara elastis ringan)
+            const boxSize = 40 + (mass * 2);
+            if (position > canvas.width - boxSize) {
+                position = canvas.width - boxSize;
+                velocity *= -0.5; // Efek pantulan redam
+            } else if (position < 0) {
+                position = 0;
+                velocity *= -0.5;
+            }
+
+            velDisplay.innerText = Math.abs(velocity).toFixed(2);
+            
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Inisialisasi awal
+        updatePhysicsState();
+        draw();
+    </script>
+</body>
+</html>

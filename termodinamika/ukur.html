@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mengukur Kalor Jenis - PhysLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --card-bg: #fdfdfd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        nav {
+            padding: 1.5rem 10%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .back-link:hover { gap: 12px; }
+
+        /* Header */
+        header {
+            padding: 40px 10% 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        /* Main Content Grid */
+        main {
+            padding: 20px 10% 60px;
+            flex-grow: 1;
+        }
+
+        .sim-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(21, 181, 176, 0.05);
+            margin-bottom: 60px;
+        }
+
+        /* Controls Area */
+        .controls h2 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        select, input[type="range"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            outline: none;
+            accent-color: var(--primary);
+        }
+
+        select {
+            background: #f9f9f9;
+            cursor: pointer;
+        }
+
+        .value-display {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        /* Visualizer Area */
+        .visualizer {
+            background: #f8fafb;
+            border-radius: 15px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .experiment-stage {
+            display: flex;
+            align-items: flex-end;
+            gap: 40px;
+            height: 200px;
+        }
+
+        /* Thermometer */
+        .thermometer {
+            width: 30px;
+            height: 180px;
+            background: #fff;
+            border: 3px solid #ddd;
+            border-radius: 20px;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            padding: 3px;
+        }
+
+        .thermo-fill {
+            width: 100%;
+            height: 20%; /* Base 20C */
+            background: var(--accent);
+            border-radius: 10px;
+            transition: height 0.5s ease;
+        }
+
+        /* Material Block */
+        .material-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .material-block {
+            width: 100px;
+            height: 100px;
+            background: #a5d8d6;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .flame-icon {
+            color: var(--accent);
+            margin-top: 10px;
+            transition: transform 0.3s;
+        }
+
+        .data-panel {
+            width: 100%;
+            margin-top: 30px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        .data-panel p {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 5px;
+        }
+
+        /* Quiz Section */
+        .quiz-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            border: 2px solid #f0f0f0;
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .quiz-header h2 {
+            color: var(--text);
+        }
+
+        .question-card {
+            background: #fdfdfd;
+            border: 1px solid #eee;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .question-card h4 {
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .options label {
+            display: block;
+            padding: 12px 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .options label:hover {
+            background: #f0fdfc;
+            border-color: var(--primary);
+        }
+
+        .options input {
+            margin-right: 10px;
+            accent-color: var(--primary);
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .btn-submit:hover {
+            background: #119994;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(21, 181, 176, 0.3);
+        }
+
+        #quiz-result {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .sim-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="back-link">
+            <i data-lucide="chevron-left"></i> Kembali
+        </a>
+        <div style="font-weight: 700; color: var(--primary);">PhysLearn.</div>
+    </nav>
+
+    <header>
+        <h1>Simulasi Kalor Jenis</h1>
+        <p style="color: var(--text-light);">Amati bagaimana berbagai material merespons pemberian energi panas (kalor).</p>
+    </header>
+
+    <main>
+        <section class="sim-container">
+            <div class="controls">
+                <h2><i data-lucide="sliders-horizontal"></i> Panel Kontrol</h2>
+                
+                <div class="control-group">
+                    <label>Pilih Material (Zat)</label>
+                    <select id="material-select">
+                        <option value="4186" data-color="#a5d8d6" data-name="Air">Air (c = 4186 J/kg°C)</option>
+                        <option value="900" data-color="#c4c4c4" data-name="Aluminium">Aluminium (c = 900 J/kg°C)</option>
+                        <option value="450" data-color="#8a8a8a" data-name="Besi">Besi (c = 450 J/kg°C)</option>
+                        <option value="130" data-color="#d4af37" data-name="Emas">Emas (c = 130 J/kg°C)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Massa Benda (m)</label>
+                    <input type="range" id="mass-slider" min="0.5" max="5" step="0.5" value="1">
+                    <div class="value-display"><span id="mass-val">1</span> kg</div>
+                </div>
+
+                <div class="control-group">
+                    <label>Energi Kalor Diberikan (Q)</label>
+                    <input type="range" id="heat-slider" min="0" max="100000" step="1000" value="0">
+                    <div class="value-display"><span id="heat-val">0</span> Joule</div>
+                </div>
+            </div>
+
+            <div class="visualizer">
+                <div class="experiment-stage">
+                    <div class="thermometer">
+                        <div class="thermo-fill" id="thermo-level"></div>
+                    </div>
+                    
+                    <div class="material-stage">
+                        <div class="material-block" id="mat-block">Air</div>
+                        <i data-lucide="flame" class="flame-icon" id="flame-viz" style="opacity: 0; transform: scale(0.5);"></i>
+                    </div>
+                </div>
+
+                <div class="data-panel">
+                    <p><span>Suhu Awal (T0):</span> <strong>20.0 °C</strong></p>
+                    <p><span>Kenaikan Suhu (ΔT):</span> <strong id="delta-t-val">0.0 °C</strong></p>
+                    <p style="border:none;"><span>Suhu Akhir (Tt):</span> <strong id="final-t-val" style="color: var(--primary);">20.0 °C</strong></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="quiz-section">
+            <div class="quiz-header">
+                <h2>Uji Pemahaman</h2>
+                <p style="color: var(--text-light);">Kerjakan 3 soal di bawah ini berdasarkan simulasi yang telah Anda lakukan.</p>
+            </div>
+
+            <form id="quiz-form">
+                <div class="question-card">
+                    <h4>1. Berdasarkan simulasi, jika massa dan kalor yang diberikan sama, material mana yang mengalami kenaikan suhu paling tinggi?</h4>
+                    <div class="options">
+                        <label><input type="radio" name="q1" value="A"> Material dengan kalor jenis paling besar (Air)</label>
+                        <label><input type="radio" name="q1" value="B"> Material dengan kalor jenis paling kecil (Emas)</label>
+                        <label><input type="radio" name="q1" value="C"> Kenaikan suhunya akan sama semua</label>
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <h4>2. Apa definisi matematis yang paling tepat untuk Kalor Jenis (c)?</h4>
+                    <div class="options">
+                        <label><input type="radio" name="q2" value="A"> c = Q / (m × ΔT)</label>
+                        <label><input type="radio" name="q2" value="B"> c = (m × ΔT) / Q</label>
+                        <label><input type="radio" name="q2" value="C"> c = Q × m × ΔT</label>
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <h4>3. Jika massa air dilipatgandakan (misal dari 1 kg menjadi 2 kg) tetapi kalor yang diberikan tetap, apa yang terjadi pada kenaikan suhu (ΔT)?</h4>
+                    <div class="options">
+                        <label><input type="radio" name="q3" value="A"> Kenaikan suhu menjadi dua kali lipat lebih panas</label>
+                        <label><input type="radio" name="q3" value="B"> Kenaikan suhu tidak berubah</label>
+                        <label><input type="radio" name="q3" value="C"> Kenaikan suhu menjadi setengah dari sebelumnya</label>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-submit" onclick="submitQuiz()">Cek Hasil Kuis</button>
+                <div id="quiz-result"></div>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // SIMULATION LOGIC
+        const matSelect = document.getElementById('material-select');
+        const massSlider = document.getElementById('mass-slider');
+        const heatSlider = document.getElementById('heat-slider');
+        
+        const massVal = document.getElementById('mass-val');
+        const heatVal = document.getElementById('heat-val');
+        const deltaTVal = document.getElementById('delta-t-val');
+        const finalTVal = document.getElementById('final-t-val');
+        
+        const thermoLevel = document.getElementById('thermo-level');
+        const matBlock = document.getElementById('mat-block');
+        const flameViz = document.getElementById('flame-viz');
+
+        const BASE_TEMP = 20;
+        const MAX_VISUAL_TEMP = 200; // Untuk skala visual termometer
+
+        function updateSimulation() {
+            // Get values
+            const c = parseFloat(matSelect.value); // Kalor Jenis (J/kgC)
+            const m = parseFloat(massSlider.value); // Massa (kg)
+            const Q = parseFloat(heatSlider.value); // Kalor (J)
+            
+            // Update labels
+            massVal.textContent = m.toFixed(1);
+            heatVal.textContent = Q.toLocaleString('id-ID');
+
+            // Update Material Visuals
+            const selectedOption = matSelect.options[matSelect.selectedIndex];
+            matBlock.style.backgroundColor = selectedOption.getAttribute('data-color');
+            matBlock.textContent = selectedOption.getAttribute('data-name');
+
+            // Visual Flame effect
+            if(Q === 0) {
+                flameViz.style.opacity = '0';
+                flameViz.style.transform = 'scale(0.5)';
+            } else {
+                flameViz.style.opacity = '1';
+                // Scale flame based on Q
+                const flameScale = 0.8 + (Q / 100000) * 1.5;
+                flameViz.style.transform = `scale(${flameScale})`;
+            }
+
+            // Calculate Delta T : Q = m * c * dT => dT = Q / (m * c)
+            const deltaT = Q / (m * c);
+            const finalT = BASE_TEMP + deltaT;
+
+            // Update Data Panel
+            deltaTVal.textContent = deltaT.toFixed(2) + ' °C';
+            finalTVal.textContent = finalT.toFixed(2) + ' °C';
+
+            // Update Thermometer Graphic
+            let fillPercentage = (finalT / MAX_VISUAL_TEMP) * 100;
+            if(fillPercentage > 100) fillPercentage = 100; // Cap at 100%
+            thermoLevel.style.height = `${fillPercentage}%`;
+
+            // Change thermo color if it gets very hot
+            if(finalT > 100) {
+                thermoLevel.style.backgroundColor = '#e74c3c'; // Red hot
+            } else {
+                thermoLevel.style.backgroundColor = 'var(--accent)'; // Normal pink
+            }
+        }
+
+        // Add Event Listeners
+        matSelect.addEventListener('change', updateSimulation);
+        massSlider.addEventListener('input', updateSimulation);
+        heatSlider.addEventListener('input', updateSimulation);
+
+        // Init
+        updateSimulation();
+
+        // QUIZ LOGIC
+        function submitQuiz() {
+            const form = document.getElementById('quiz-form');
+            const resultDiv = document.getElementById('quiz-result');
+            
+            // Kunci Jawaban
+            const answers = {
+                q1: 'B', // Emas (kalor jenis terkecil, paling cepat panas)
+                q2: 'A', // c = Q / (m.dT)
+                q3: 'C'  // Berbanding terbalik dengan massa
+            };
+
+            let score = 0;
+            let answeredAll = true;
+
+            for(let key in answers) {
+                const selected = form.querySelector(`input[name="${key}"]:checked`);
+                if(!selected) {
+                    answeredAll = false;
+                    break;
+                }
+                if(selected.value === answers[key]) {
+                    score++;
+                }
+            }
+
+            if(!answeredAll) {
+                resultDiv.style.color = "var(--text-light)";
+                resultDiv.innerHTML = "Harap jawab semua pertanyaan terlebih dahulu.";
+                resultDiv.style.display = "block";
+                return;
+            }
+
+            // Display Result
+            resultDiv.style.display = "block";
+            if(score === 3) {
+                resultDiv.style.color = "var(--primary)";
+                resultDiv.innerHTML = `Luar Biasa! Skor Anda: 3/3 <i data-lucide="check-circle" style="vertical-align: middle;"></i>`;
+            } else {
+                resultDiv.style.color = "var(--text)";
+                resultDiv.innerHTML = `Skor Anda: ${score}/3. Coba tinjau kembali rumus dan simulasi di atas.`;
+            }
+            lucide.createIcons(); // Refresh icon in result
+        }
+    </script>
+</body>
+</html>

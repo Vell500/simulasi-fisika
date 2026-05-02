@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perubahan Wujud Zat - PhysLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --card-bg: #fafafa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        nav {
+            padding: 1.5rem 10%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .back-link:hover { gap: 12px; }
+
+        /* Container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        header p { color: var(--text-light); }
+
+        /* Simulation Section */
+        .sim-container {
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            margin-bottom: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            background: #f8fafb;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+            max-width: 100%;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 50px;
+            background: var(--card-bg);
+            color: var(--text);
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button.active, button:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .status-box {
+            background: var(--secondary);
+            padding: 15px 25px;
+            border-radius: 12px;
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .status-box h3 { color: var(--text); font-size: 1.1rem; }
+        .status-box p { font-size: 0.9rem; color: var(--text); opacity: 0.9; }
+
+        /* Quiz Section (Micro-drilling) */
+        .quiz-section {
+            background: #fdfdfd;
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid #f0f0f0;
+            margin-bottom: 50px;
+        }
+
+        .quiz-section h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            color: var(--primary);
+        }
+
+        .question {
+            margin-bottom: 25px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+        }
+
+        .question p { font-weight: 500; margin-bottom: 15px; }
+
+        .options label {
+            display: block;
+            padding: 10px 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .options label:hover { background: #f8fafb; border-color: var(--primary); }
+        .options input[type="radio"] { margin-right: 10px; accent-color: var(--primary); }
+
+        .btn-submit {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            border-radius: 50px;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover { background: #e8959f; }
+
+        #quiz-result {
+            margin-top: 20px;
+            font-weight: 600;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .correct-bg { background: #e0f8f7; color: var(--primary); border: 1px solid var(--primary); }
+        .wrong-bg { background: #fbebf0; color: var(--accent); border: 1px solid var(--accent); }
+
+        /* Video Section */
+        .video-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .video-section h2 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .iframe-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid #eee;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .quiz-section { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="back-link">
+            <i data-lucide="chevron-left"></i> Modul Termodinamika
+        </a>
+        <div style="font-weight: 700; color: var(--primary);">PhysLearn.</div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>Perubahan Wujud Zat</h1>
+            <p>Eksplorasi bagaimana energi termal mengubah susunan molekul suatu benda secara interaktif.</p>
+        </header>
+
+        <section class="sim-container">
+            <canvas id="particleCanvas" width="600" height="300"></canvas>
+            
+            <div class="controls">
+                <button id="btn-solid" class="active" onclick="changeState('solid')">
+                    <i data-lucide="cuboid"></i> Padat
+                </button>
+                <button id="btn-liquid" onclick="changeState('liquid')">
+                    <i data-lucide="droplet"></i> Cair
+                </button>
+                <button id="btn-gas" onclick="changeState('cloud')">
+                    <i data-lucide="cloud"></i> Gas
+                </button>
+            </div>
+
+            <div class="status-box" id="statusBox">
+                <h3>Fase Padat</h3>
+                <p>Molekul tersusun rapat dan hanya bergetar di tempatnya. Energi kinetik sangat rendah.</p>
+            </div>
+        </section>
+
+        <section class="quiz-section">
+            <h2><i data-lucide="brain-circuit"></i> Uji Pemahaman Cepat</h2>
+            <form id="quizForm">
+                <div class="question">
+                    <p>1. Proses perubahan wujud dari gas menjadi padat tanpa melalui fase cair disebut?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q1" value="a"> Menyublim</label>
+                        <label><input type="radio" name="q1" value="b"> Mengkristal (Deposisi)</label>
+                        <label><input type="radio" name="q1" value="c"> Mengembun</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p>2. Mengapa es (padat) berubah menjadi air (cair) ketika dibiarkan di suhu ruang?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q2" value="a"> Karena es melepas kalor ke lingkungan.</label>
+                        <label><input type="radio" name="q2" value="b"> Karena es menyerap kalor dari lingkungan, memecah ikatan molekulnya.</label>
+                        <label><input type="radio" name="q2" value="c"> Karena volume es menyusut.</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p>3. Saat merebus air, terbentuk uap air. Apa yang terjadi pada pergerakan molekul air tersebut?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q3" value="a"> Molekul melambat dan saling merapat.</label>
+                        <label><input type="radio" name="q3" value="b"> Molekul berhenti bergerak seluruhnya.</label>
+                        <label><input type="radio" name="q3" value="c"> Molekul bergerak sangat cepat dan saling menjauh (jarak renggang).</label>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-submit" onclick="checkQuiz()">Cek Jawaban</button>
+                <div id="quiz-result"></div>
+            </form>
+        </section>
+
+        <section class="video-section">
+            <h2><i data-lucide="monitor-play"></i> Pendalaman Materi Ruang Kelas</h2>
+            <p style="margin-bottom: 20px; color: var(--text-light);">Saksikan video kuliah berdurasi panjang (>30 menit) ini untuk penjelasan matematis dan konseptual yang lebih mendalam.</p>
+            <div class="iframe-container">
+                <iframe src="https://www.youtube.com/embed/_he_1eEuVMk" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 PhysLearn. Belajar sedikit demi sedikit, setiap hari.</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // --- SIMULASI PARTIKEL CANVAS ---
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let currentState = 'solid';
+        let particles = [];
+        const numParticles = 60;
+        
+        // Warna primer dari CSS untuk partikel
+        const particleColor = '#15b5b0';
+
+        // Inisialisasi Partikel
+        function initParticles() {
+            particles = [];
+            let cols = 10;
+            let rows = 6;
+            let startX = (canvas.width - (cols * 15)) / 2;
+            let startY = (canvas.height - (rows * 15)) / 2 + 50;
+
+            let i = 0;
+            for(let r=0; r<rows; r++) {
+                for(let c=0; c<cols; c++) {
+                    if(i >= numParticles) break;
+                    particles.push({
+                        baseX: startX + c * 15,
+                        baseY: startY + r * 15,
+                        x: startX + c * 15,
+                        y: startY + r * 15,
+                        vx: (Math.random() - 0.5) * 2,
+                        vy: (Math.random() - 0.5) * 2,
+                        radius: 5
+                    });
+                    i++;
+                }
+            }
+        }
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach(p => {
+                // Logika berdasarkan state
+                if (currentState === 'solid') {
+                    // Bergetar di tempat (sekitar baseX, baseY)
+                    p.x = p.baseX + (Math.random() - 0.5) * 3;
+                    p.y = p.baseY + (Math.random() - 0.5) * 3;
+                } 
+                else if (currentState === 'liquid') {
+                    // Bergerak acak, tapi cenderung di bagian bawah (gravitasi ringan)
+                    p.x += p.vx * 1.5;
+                    p.y += p.vy * 1.5 + 0.5; // sedikit tertarik ke bawah
+
+                    // Pantulan dinding & lantai
+                    if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if(p.y > canvas.height - p.radius) {
+                        p.y = canvas.height - p.radius;
+                        p.vy *= -1;
+                    }
+                    if(p.y < canvas.height / 2) p.vy += 0.2; // batas cairan
+                } 
+                else if (currentState === 'cloud') {
+                    // Bergerak cepat ke segala arah memenuhi wadah
+                    p.x += p.vx * 4;
+                    p.y += p.vy * 4;
+
+                    if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                }
+
+                // Menggambar Partikel
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = particleColor;
+                ctx.fill();
+                ctx.closePath();
+            });
+
+            requestAnimationFrame(drawParticles);
+        }
+
+        // Jalankan animasi pertama kali
+        initParticles();
+        drawParticles();
+
+        // Ganti Fase
+        function changeState(newState) {
+            currentState = newState;
+            
+            // Reset posisi untuk solid/liquid transisi agar lebih rapi
+            if(newState === 'solid') initParticles();
+            
+            // Update tombol UI
+            document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${newState === 'cloud' ? 'gas' : newState}`).classList.add('active');
+
+            // Update Teks Penjelasan
+            const statusBox = document.getElementById('statusBox');
+            if(newState === 'solid') {
+                statusBox.innerHTML = `<h3>Fase Padat</h3><p>Molekul tersusun rapat dan hanya bergetar di tempatnya. Energi kinetik sangat rendah.</p>`;
+            } else if (newState === 'liquid') {
+                statusBox.innerHTML = `<h3>Fase Cair (Mencair)</h3><p>Sistem menyerap kalor. Ikatan molekul mulai merenggang, memungkinkan mereka bergerak bebas mengelilingi satu sama lain namun tetap mempertahankan volume.</p>`;
+            } else if (newState === 'cloud') {
+                statusBox.innerHTML = `<h3>Fase Gas (Menguap)</h3><p>Energi termal sangat tinggi. Ikatan antar molekul terputus sehingga partikel bergerak cepat ke segala arah dan mengisi seluruh ruang.</p>`;
+            }
+        }
+
+        // --- KUIS LOGIC ---
+        function checkQuiz() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            const q3 = document.querySelector('input[name="q3"]:checked');
+            const resultBox = document.getElementById('quiz-result');
+
+            if (!q1 || !q2 || !q3) {
+                resultBox.style.display = 'block';
+                resultBox.className = 'wrong-bg';
+                resultBox.innerHTML = '<i data-lucide="alert-circle" style="vertical-align: middle; margin-right: 5px;"></i> Harap jawab semua pertanyaan terlebih dahulu!';
+                lucide.createIcons();
+                return;
+            }
+
+            let score = 0;
+            if(q1.value === 'b') score++;
+            if(q2.value === 'b') score++;
+            if(q3.value === 'c') score++;
+
+            resultBox.style.display = 'block';
+            if (score === 3) {
+                resultBox.className = 'correct-bg';
+                resultBox.innerHTML = `<i data-lucide="check-circle" style="vertical-align: middle; margin-right: 5px;"></i> Sempurna! Anda mendapat nilai 3/3. Pemahaman dasar Anda sudah kuat.`;
+            } else {
+                resultBox.className = 'wrong-bg';
+                resultBox.innerHTML = `<i data-lucide="x-circle" style="vertical-align: middle; margin-right: 5px;"></i> Anda mendapat ${score}/3. Tidak apa-apa, mari pelajari ulang bagian yang salah dan coba lagi perlahan-lahan.`;
+            }
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

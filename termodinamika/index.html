@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termodinamika - PhysLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --card-bg: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar & Breadcrumbs */
+        nav {
+            padding: 1.5rem 10%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            gap: 12px;
+        }
+
+        /* Header */
+        header {
+            padding: 60px 10% 40px;
+            background: linear-gradient(135deg, #f0fdfc 0%, #ffffff 100%);
+            text-align: center;
+        }
+
+        .category-tag {
+            background: var(--secondary);
+            color: var(--text);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+
+        header p {
+            color: var(--text-light);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Sub-Navigation Grid */
+        .content-section {
+            padding: 50px 10% 80px;
+            flex-grow: 1;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .nav-item {
+            background: var(--card-bg);
+            border: 1.5px solid #f0f0f0;
+            border-radius: 20px;
+            padding: 30px;
+            text-decoration: none;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(21, 181, 176, 0.1);
+        }
+
+        .icon-wrapper {
+            background: #f8fafb;
+            color: var(--primary);
+            width: 60px;
+            height: 60px;
+            min-width: 60px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .nav-item:hover .icon-wrapper {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: var(--text);
+            transition: 0.3s;
+        }
+
+        .nav-info p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        .arrow-icon {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            color: #eee;
+            transition: 0.3s;
+        }
+
+        .nav-item:hover .arrow-icon {
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 10%;
+            text-align: center;
+            background: #fafafa;
+            border-top: 1px solid #eee;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 2rem; }
+            .nav-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../index.html" class="back-link">
+            <i data-lucide="chevron-left"></i> Kembali ke Beranda
+        </a>
+        <div style="font-weight: 700; color: var(--primary);">PhysLearn.</div>
+    </nav>
+
+    <header>
+        <span class="category-tag">Modul Materi</span>
+        <h1>Termodinamika</h1>
+        <p>Pelajari energi, panas, kerja, dan transformasi zat melalui sub-materi interaktif di bawah ini.</p>
+    </header>
+
+    <main class="content-section">
+        <div class="nav-grid">
+            <a href="perpindahan.html" class="nav-item">
+                <div class="icon-wrapper">
+                    <i data-lucide="move-right"></i>
+                </div>
+                <div class="nav-info">
+                    <h3>Perpindahan Kalor</h3>
+                    <p>Konduksi, konveksi, dan radiasi dalam kehidupan sehari-hari.</p>
+                </div>
+                <i data-lucide="arrow-up-right" class="arrow-icon"></i>
+            </a>
+
+            <a href="kalor.html" class="nav-item">
+                <div class="icon-wrapper">
+                    <i data-lucide="flame"></i>
+                </div>
+                <div class="nav-info">
+                    <h3>Kalor</h3>
+                    <p>Pengertian energi panas dan pengaruhnya terhadap suhu benda.</p>
+                </div>
+                <i data-lucide="arrow-up-right" class="arrow-icon"></i>
+            </a>
+
+            <a href="perubahan.html" class="nav-item">
+                <div class="icon-wrapper">
+                    <i data-lucide="droplets"></i>
+                </div>
+                <div class="nav-info">
+                    <h3>Perubahan Wujud Zat</h3>
+                    <p>Proses mencair, membeku, menguap, hingga sublimasi zat.</p>
+                </div>
+                <i data-lucide="arrow-up-right" class="arrow-icon"></i>
+            </a>
+
+            <a href="ukur.html" class="nav-item">
+                <div class="icon-wrapper">
+                    <i data-lucide="gauge"></i>
+                </div>
+                <div class="nav-info">
+                    <h3>Ukur Kalor Jenis</h3>
+                    <p>Metodologi dan perhitungan kapasitas panas jenis benda.</p>
+                </div>
+                <i data-lucide="arrow-up-right" class="arrow-icon"></i>
+            </a>
+
+            <a href="asasblack.html" class="nav-item" style="border-left: 4px solid var(--accent);">
+                <div class="icon-wrapper">
+                    <i data-lucide="flask-conical"></i>
+                </div>
+                <div class="nav-info">
+                    <h3>Percobaan Asas Black</h3>
+                    <p>Eksperimen pencampuran dua zat dengan suhu berbeda.</p>
+                </div>
+                <i data-lucide="arrow-up-right" class="arrow-icon"></i>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <p>PhysLearn &copy; 2026 - Modul Pembelajaran Fisika Digital</p>
+    </footer>
+
+    <script>
+        // Initialize icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

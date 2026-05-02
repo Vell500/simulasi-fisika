@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Bandul Sederhana - simuphys</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --card-bg: #fdfdfd;
+            --border: #f0f0f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        nav {
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover { color: var(--primary); }
+
+        .logo-small {
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Main Container */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            padding: 30px 5%;
+            flex: 1;
+        }
+
+        /* Simulation Canvas Area */
+        .simulation-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .canvas-container {
+            flex: 1;
+            width: 100%;
+            min-height: 400px;
+            position: relative;
+            background: linear-gradient(to bottom, #f0fdfc, #ffffff);
+            border-bottom: 1px solid var(--border);
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .theory-bar {
+            padding: 15px 20px;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Control Panel */
+        .controls-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .controls-header {
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+        }
+
+        /* Sliders */
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 0 5px rgba(21, 181, 176, 0.5);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        /* Metrics Dashboard */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .metric-box {
+            background: #f0fdfc;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(21, 181, 176, 0.1);
+        }
+
+        .metric-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .btn-play {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-play:hover { background: #129c98; }
+
+        .btn-reset {
+            background: white;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-reset:hover { background: #f9f9f9; }
+
+        @media (max-width: 992px) {
+            .dashboard { grid-template-columns: 1fr; }
+            .canvas-container { min-height: 300px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="back-btn">
+            <i data-lucide="chevron-left"></i> Modul Mekanika
+        </a>
+        <div class="logo-small">
+            <i data-lucide="atom"></i> simuphys
+        </div>
+    </nav>
+
+    <div class="dashboard">
+        <div class="simulation-card">
+            <div class="canvas-container" id="canvasWrapper">
+                <canvas id="pendulumCanvas"></canvas>
+            </div>
+            <div class="theory-bar">
+                <i data-lucide="info" style="color: var(--primary);"></i>
+                <p>Periode ayunan (T) tidak dipengaruhi oleh massa benda, melainkan hanya bergantung pada panjang tali (L) dan gravitasi (g).</p>
+            </div>
+        </div>
+
+        <div class="controls-card">
+            <div class="controls-header">
+                <i data-lucide="sliders-horizontal"></i> Parameter Simulasi
+            </div>
+
+            <div class="control-group">
+                <div class="control-header">
+                    <span>Panjang Tali (L)</span>
+                    <span id="lenVal">1.0 m</span>
+                </div>
+                <input type="range" id="lenSlider" min="0.5" max="2.0" step="0.1" value="1.0">
+            </div>
+
+            <div class="control-group">
+                <div class="control-header">
+                    <span>Gravitasi (g)</span>
+                    <span id="gravVal">9.8 m/s²</span>
+                </div>
+                <input type="range" id="gravSlider" min="1.0" max="20.0" step="0.1" value="9.8">
+            </div>
+
+            <div class="control-group">
+                <div class="control-header">
+                    <span>Sudut Awal (&theta;)</span>
+                    <span id="angleVal">45°</span>
+                </div>
+                <input type="range" id="angleSlider" min="0" max="90" step="1" value="45">
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-title">Periode (T)</div>
+                    <div class="metric-value" id="periodVal">2.01 s</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">Waktu Berjalan</div>
+                    <div class="metric-value" id="timeVal">0.00 s</div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-play" id="playBtn">
+                    <i data-lucide="play"></i> Mulai
+                </button>
+                <button class="btn-reset" id="resetBtn">
+                    <i data-lucide="rotate-ccw"></i> Reset
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Canvas Setup
+        const canvas = document.getElementById('pendulumCanvas');
+        const ctx = canvas.getContext('2d');
+        const wrapper = document.getElementById('canvasWrapper');
+
+        // UI Elements
+        const lenSlider = document.getElementById('lenSlider');
+        const gravSlider = document.getElementById('gravSlider');
+        const angleSlider = document.getElementById('angleSlider');
+        const lenVal = document.getElementById('lenVal');
+        const gravVal = document.getElementById('gravVal');
+        const angleVal = document.getElementById('angleVal');
+        const periodVal = document.getElementById('periodVal');
+        const timeVal = document.getElementById('timeVal');
+        const playBtn = document.getElementById('playBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Physics Variables
+        let L = parseFloat(lenSlider.value);
+        let g = parseFloat(gravSlider.value);
+        let initialAngleDeg = parseFloat(angleSlider.value);
+        
+        let angle = initialAngleDeg * (Math.PI / 180);
+        let angularVelocity = 0;
+        let angularAcceleration = 0;
+        
+        let isRunning = false;
+        let time = 0;
+        let lastTimestamp = 0;
+        
+        // Scale for drawing (1 meter = 120 pixels)
+        const scale = 120;
+
+        function resizeCanvas() {
+            canvas.width = wrapper.clientWidth;
+            canvas.height = wrapper.clientHeight;
+            drawPendulum();
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function updateMetrics() {
+            // T = 2 * PI * sqrt(L/g)
+            let period = 2 * Math.PI * Math.sqrt(L / g);
+            periodVal.innerText = period.toFixed(2) + ' s';
+            timeVal.innerText = time.toFixed(2) + ' s';
+        }
+
+        function drawPendulum() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Pivot point
+            const originX = canvas.width / 2;
+            const originY = 20;
+
+            // Calculate bob position
+            const bobX = originX + L * scale * Math.sin(angle);
+            const bobY = originY + L * scale * Math.cos(angle);
+
+            // Draw ceiling
+            ctx.beginPath();
+            ctx.moveTo(originX - 50, originY);
+            ctx.lineTo(originX + 50, originY);
+            ctx.strokeStyle = '#7a4850';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Draw string
+            ctx.beginPath();
+            ctx.moveTo(originX, originY);
+            ctx.lineTo(bobX, bobY);
+            ctx.strokeStyle = '#a57d84';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Draw bob
+            ctx.beginPath();
+            ctx.arc(bobX, bobY, 20, 0, Math.PI * 2);
+            ctx.fillStyle = '#f9da82'; // Secondary color
+            ctx.fill();
+            ctx.strokeStyle = '#f9aab4'; // Accent stroke
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function step(timestamp) {
+            if (!lastTimestamp) lastTimestamp = timestamp;
+            let dt = (timestamp - lastTimestamp) / 1000; // Convert ms to seconds
+            lastTimestamp = timestamp;
+
+            // Cap dt to prevent instability if tab is inactive
+            if (dt > 0.05) dt = 0.05; 
+
+            if (isRunning) {
+                // Euler-Cromer Integration
+                angularAcceleration = -(g / L) * Math.sin(angle);
+                angularVelocity += angularAcceleration * dt;
+                angle += angularVelocity * dt;
+                
+                // Simple damping to simulate realistic air resistance
+                angularVelocity *= 0.999; 
+                
+                time += dt;
+                updateMetrics();
+            }
+
+            drawPendulum();
+            requestAnimationFrame(step);
+        }
+
+        // Event Listeners
+        lenSlider.addEventListener('input', (e) => {
+            L = parseFloat(e.target.value);
+            lenVal.innerText = L.toFixed(1) + ' m';
+            updateMetrics();
+            if(!isRunning) drawPendulum();
+        });
+
+        gravSlider.addEventListener('input', (e) => {
+            g = parseFloat(e.target.value);
+            gravVal.innerText = g.toFixed(1) + ' m/s²';
+            updateMetrics();
+            if(!isRunning) drawPendulum();
+        });
+
+        angleSlider.addEventListener('input', (e) => {
+            if (!isRunning) {
+                initialAngleDeg = parseFloat(e.target.value);
+                angleVal.innerText = initialAngleDeg + '°';
+                angle = initialAngleDeg * (Math.PI / 180);
+                drawPendulum();
+            }
+        });
+
+        playBtn.addEventListener('click', () => {
+            isRunning = !isRunning;
+            if (isRunning) {
+                playBtn.innerHTML = '<i data-lucide="pause"></i> Jeda';
+                playBtn.style.background = 'var(--accent)';
+                lastTimestamp = performance.now();
+                angleSlider.disabled = true;
+            } else {
+                playBtn.innerHTML = '<i data-lucide="play"></i> Mulai';
+                playBtn.style.background = 'var(--primary)';
+                angleSlider.disabled = false;
+            }
+            lucide.createIcons();
+        });
+
+        resetBtn.addEventListener('click', () => {
+            isRunning = false;
+            playBtn.innerHTML = '<i data-lucide="play"></i> Mulai';
+            playBtn.style.background = 'var(--primary)';
+            
+            L = parseFloat(lenSlider.value);
+            g = parseFloat(gravSlider.value);
+            initialAngleDeg = parseFloat(angleSlider.value);
+            
+            angle = initialAngleDeg * (Math.PI / 180);
+            angularVelocity = 0;
+            time = 0;
+            angleSlider.disabled = false;
+            
+            updateMetrics();
+            drawPendulum();
+            lucide.createIcons();
+        });
+
+        // Init
+        resizeCanvas();
+        updateMetrics();
+        requestAnimationFrame(step);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energi & Usaha - simuphys</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --panel-bg: #fdfdfd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Navigasi */
+        nav {
+            padding: 1rem 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover { color: var(--primary); }
+        .logo-small { font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+
+        /* Header */
+        header {
+            padding: 40px 10% 20px;
+            text-align: center;
+        }
+
+        header h1 { font-size: 2.2rem; color: var(--text); margin-bottom: 10px; }
+        header p { color: var(--text-light); max-width: 600px; margin: 0 auto; }
+
+        /* Container Simulasi */
+        .sim-container {
+            padding: 20px 10%;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Area Interaktif */
+        .interactive-area {
+            background: var(--panel-bg);
+            border: 2px solid #eee;
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .canvas-box {
+            height: 350px;
+            background: linear-gradient(180deg, #e0f7fa 0%, #ffffff 100%);
+            border-radius: 12px;
+            position: relative;
+            border: 1px solid #ddd;
+            overflow: hidden;
+        }
+
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 40px;
+            background: var(--primary);
+            opacity: 0.2;
+        }
+
+        .ruler {
+            position: absolute;
+            left: 20px;
+            top: 10px;
+            bottom: 40px;
+            width: 2px;
+            background: var(--text-light);
+            opacity: 0.5;
+        }
+
+        .ball {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle at 30% 30%, var(--accent), #d17582);
+            border-radius: 50%;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 310px; /* Posisi awal = ketinggian max */
+            box-shadow: 0 5px 15px rgba(249, 170, 180, 0.4);
+            transition: bottom 0.1s linear;
+        }
+
+        /* Kontrol Simulasi */
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+        }
+
+        .control-group { display: flex; flex-direction: column; gap: 8px; }
+        .control-group label { font-size: 0.9rem; font-weight: 600; display: flex; justify-content: space-between; }
+        
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #eee;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+
+        .btn-group {
+            grid-column: span 2;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .btn-play { background: var(--primary); color: white; }
+        .btn-play:hover { background: #119894; transform: translateY(-2px); }
+        .btn-reset { background: #eee; color: var(--text); }
+        .btn-reset:hover { background: #ddd; }
+
+        /* Area Grafik (Bar Chart) */
+        .chart-area {
+            background: var(--panel-bg);
+            border: 2px solid #eee;
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-area h3 { font-size: 1.1rem; margin-bottom: 20px; text-align: center; }
+
+        .bars-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            flex-grow: 1;
+            height: 250px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 60px;
+        }
+
+        .bar-bg {
+            width: 40px;
+            height: 200px;
+            background: #f0f0f0;
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .bar-fill {
+            width: 100%;
+            height: 100%;
+            transition: height 0.1s linear;
+        }
+
+        .fill-ep { background: var(--accent); }
+        .fill-ek { background: var(--secondary); }
+        .fill-em { background: var(--primary); }
+
+        .bar-label { font-weight: 600; font-size: 0.85rem; }
+        .bar-value { font-size: 0.8rem; color: var(--text-light); }
+
+        /* Micro-drilling Challenge Section */
+        .challenge-section {
+            margin: 40px 10% 80px;
+            background: linear-gradient(135deg, var(--primary), #119894);
+            border-radius: 20px;
+            padding: 30px 40px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(21, 181, 176, 0.2);
+        }
+
+        .challenge-text h3 { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .challenge-text p { font-size: 0.95rem; opacity: 0.9; max-width: 600px; }
+        
+        .challenge-action button {
+            background: var(--secondary);
+            color: var(--text);
+            padding: 12px 30px;
+            border-radius: 30px;
+        }
+        .challenge-action button:hover { background: white; }
+
+        @media (max-width: 900px) {
+            .sim-container { grid-template-columns: 1fr; }
+            .challenge-section { flex-direction: column; text-align: center; gap: 20px; }
+            .challenge-text h3 { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="back-btn">
+            <i data-lucide="chevron-left"></i> Kembali ke Mekanika
+        </a>
+        <div class="logo-small">
+            <i data-lucide="atom"></i> simuphys
+        </div>
+    </nav>
+
+    <header>
+        <h1>Energi Potensial & Kinetik</h1>
+        <p>Eksperimen virtual hukum kekekalan energi mekanik. Amati perubahan energi saat benda jatuh bebas.</p>
+    </header>
+
+    <div class="sim-container">
+        <div class="interactive-area">
+            <div class="canvas-box" id="canvasBox">
+                <div class="ruler"></div>
+                <div class="ground"></div>
+                <div class="ball" id="bola"></div>
+                <div style="position: absolute; top: 10px; right: 20px; font-weight: 600; color: var(--primary);" id="liveHeight">
+                    h = 10.0 m
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label>Massa (m) <span id="massaVal">5 kg</span></label>
+                    <input type="range" id="massa" min="1" max="10" step="1" value="5">
+                </div>
+                <div class="control-group">
+                    <label>Ketinggian Awal (h) <span id="tinggiVal">10 m</span></label>
+                    <input type="range" id="tinggi" min="2" max="10" step="1" value="10">
+                </div>
+                <div class="btn-group">
+                    <button class="btn-play" id="btnPlay"><i data-lucide="play"></i> Mulai Jatuh</button>
+                    <button class="btn-reset" id="btnReset"><i data-lucide="rotate-ccw"></i> Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-area">
+            <h3>Grafik Energi (Joule)</h3>
+            <div class="bars-container">
+                <div class="bar-wrapper">
+                    <div class="bar-bg"><div class="bar-fill fill-ep" id="barEP" style="height: 100%;"></div></div>
+                    <span class="bar-label">EP</span>
+                    <span class="bar-value" id="valEP">500 J</span>
+                </div>
+                <div class="bar-wrapper">
+                    <div class="bar-bg"><div class="bar-fill fill-ek" id="barEK" style="height: 0%;"></div></div>
+                    <span class="bar-label">EK</span>
+                    <span class="bar-value" id="valEK">0 J</span>
+                </div>
+                <div class="bar-wrapper">
+                    <div class="bar-bg"><div class="bar-fill fill-em" id="barEM" style="height: 100%;"></div></div>
+                    <span class="bar-label">EM</span>
+                    <span class="bar-value" id="valEM">500 J</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="challenge-section">
+        <div class="challenge-text">
+            <h3><i data-lucide="award"></i> Tantangan Analisis</h3>
+            <p><strong>Misi:</strong> Atur slider di atas! Jika kamu ingin menghasilkan Energi Kinetik maksimal tepat sebesar <strong>240 Joule</strong> menggunakan bola bermassa <strong>4 kg</strong>, di ketinggian berapakah bola harus dijatuhkan? (Anggap g = 10 m/s²)</p>
+        </div>
+        <div class="challenge-action">
+            <button onclick="cekTantangan()"><i data-lucide="check-circle"></i> Cek Jawabanku</button>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Variabel Fisika & DOM
+        const g = 10; // Gravitasi disederhanakan 10 m/s2 untuk mempermudah hitungan mental
+        let m = 5;
+        let h_max = 10;
+        let h_current = 10;
+        let v = 0;
+        let isPlaying = false;
+        let animationId;
+
+        // Skala Canvas
+        const pixelPerMeter = 27; // Konversi tinggi canvas (350px - ground 40px)
+        const groundOffset = 40;
+
+        // DOM Elements
+        const bola = document.getElementById('bola');
+        const sliderMassa = document.getElementById('massa');
+        const sliderTinggi = document.getElementById('tinggi');
+        const textMassa = document.getElementById('massaVal');
+        const textTinggi = document.getElementById('tinggiVal');
+        const liveHeight = document.getElementById('liveHeight');
+        
+        const barEP = document.getElementById('barEP');
+        const barEK = document.getElementById('barEK');
+        const barEM = document.getElementById('barEM');
+        
+        const valEP = document.getElementById('valEP');
+        const valEK = document.getElementById('valEK');
+        const valEM = document.getElementById('valEM');
+
+        const btnPlay = document.getElementById('btnPlay');
+        const btnReset = document.getElementById('btnReset');
+
+        // Fungsi Hitung dan Update UI
+        function updatePhysicsUI() {
+            let ep = m * g * h_current;
+            let ek = 0.5 * m * (v * v);
+            let em = m * g * h_max; // Hukum kekekalan energi
+
+            // Update posisi bola (dari bawah)
+            let pixelBottom = groundOffset + (h_current * pixelPerMeter);
+            bola.style.bottom = pixelBottom + 'px';
+            liveHeight.innerText = `h = ${Math.max(0, h_current).toFixed(1)} m`;
+
+            // Update teks nilai
+            valEP.innerText = Math.round(ep) + ' J';
+            valEK.innerText = Math.round(ek) + ' J';
+            valEM.innerText = Math.round(em) + ' J';
+
+            // Update tinggi bar (Persentase dari EM)
+            barEP.style.height = (ep / em * 100) + '%';
+            barEK.style.height = (ek / em * 100) + '%';
+            barEM.style.height = '100%';
+        }
+
+        function resetSim() {
+            cancelAnimationFrame(animationId);
+            isPlaying = false;
+            m = parseFloat(sliderMassa.value);
+            h_max = parseFloat(sliderTinggi.value);
+            h_current = h_max;
+            v = 0;
+            
+            btnPlay.innerHTML = '<i data-lucide="play"></i> Mulai Jatuh';
+            lucide.createIcons();
+            
+            textMassa.innerText = m + ' kg';
+            textTinggi.innerText = h_max + ' m';
+            
+            updatePhysicsUI();
+        }
+
+        // Engine Animasi
+        let lastTime = 0;
+        function animate(time) {
+            if (!isPlaying) return;
+            if (!lastTime) lastTime = time;
+            let deltaTime = (time - lastTime) / 1000; // detik
+            lastTime = time;
+
+            // Memperlambat waktu simulasi agar terlihat (skala waktu 0.5x)
+            let simDelta = deltaTime * 0.5;
+
+            // v = v0 + g*t
+            v += g * simDelta;
+            // h = h0 - v*t
+            h_current -= v * simDelta;
+
+            if (h_current <= 0) {
+                h_current = 0;
+                v = Math.sqrt(2 * g * h_max); // Kecepatan max sesaat sebelum menumbuk
+                isPlaying = false;
+                updatePhysicsUI();
+                return;
+            }
+
+            updatePhysicsUI();
+            animationId = requestAnimationFrame(animate);
+        }
+
+        // Event Listeners
+        sliderMassa.addEventListener('input', resetSim);
+        sliderTinggi.addEventListener('input', resetSim);
+
+        btnPlay.addEventListener('click', () => {
+            if (h_current <= 0) resetSim(); // Jika sudah di bawah, naikkan lagi sebelum play
+            
+            if (!isPlaying) {
+                isPlaying = true;
+                lastTime = 0;
+                btnPlay.innerHTML = '<i data-lucide="pause"></i> Jeda';
+                lucide.createIcons();
+                animationId = requestAnimationFrame(animate);
+            } else {
+                isPlaying = false;
+                cancelAnimationFrame(animationId);
+                btnPlay.innerHTML = '<i data-lucide="play"></i> Lanjut';
+                lucide.createIcons();
+            }
+        });
+
+        btnReset.addEventListener('click', resetSim);
+
+        // Fitur Evaluasi Micro-drilling
+        function cekTantangan() {
+            let currentMassa = sliderMassa.value;
+            let currentTinggi = sliderTinggi.value;
+            
+            // Rumus: EK_max = EP_awal -> 240 = m * g * h -> 240 = 4 * 10 * h -> h = 6 meter
+            if (currentMassa == 4 && currentTinggi == 6) {
+                alert("Luar Biasa! Jawabanmu benar. Energi Mekanik = 4 kg × 10 m/s² × 6 m = 240 Joule. Seluruh energi ini berubah menjadi Energi Kinetik saat bola menyentuh tanah.");
+            } else {
+                alert("Hampir tepat! Coba ingat rumusnya: Energi Kinetik maksimal sama dengan Energi Potensial awal (EP = m × g × h). Atur slider Massa ke 4 kg dan cari Ketinggian yang pas agar hasilnya 240.");
+            }
+        }
+
+        // Inisialisasi Pertama
+        resetSim();
+    </script>
+</body>
+</html>

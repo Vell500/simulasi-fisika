@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Pemantulan & Pembiasan - PhysLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --canvas-top: #f0fdfc;
+            --canvas-bottom: #fff9e6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            padding: 1.2rem 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .container {
+            padding: 40px 8%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header-title h1 {
+            font-size: 2.2rem;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .header-title p {
+            color: var(--text-light);
+        }
+
+        /* Simulation Layout */
+        .simulation-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+            border: 1px solid #eee;
+            overflow: hidden;
+            margin-bottom: 50px;
+        }
+
+        .canvas-container {
+            background: #fafafa;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-right: 1px solid #eee;
+        }
+
+        canvas {
+            background: white;
+            border-radius: 12px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+            max-width: 100%;
+        }
+
+        .controls {
+            padding: 30px;
+            background: white;
+        }
+
+        .controls h3 {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+
+        .value-display {
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        .info-box {
+            background: var(--canvas-top);
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+            font-size: 0.85rem;
+            margin-top: 20px;
+        }
+
+        /* Quiz Section */
+        .quiz-section {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+            border: 1px solid #eee;
+        }
+
+        .quiz-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            color: var(--text);
+        }
+
+        .quiz-header i {
+            color: var(--accent);
+        }
+
+        .question-card {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .question-card:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .option-label:hover {
+            background: var(--canvas-top);
+            border-color: var(--primary);
+        }
+
+        .option-label input[type="radio"] {
+            accent-color: var(--primary);
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-submit:hover {
+            background: #119692;
+            transform: translateY(-2px);
+        }
+
+        .quiz-result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .result-success { background: #d1fae5; color: #065f46; }
+        .result-warning { background: #fee2e2; color: #991b1b; }
+
+        @media (max-width: 900px) {
+            .simulation-wrapper { grid-template-columns: 1fr; }
+            .canvas-container { border-right: none; border-bottom: 1px solid #eee; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">
+            <i data-lucide="atom"></i> PhysLearn
+        </a>
+        <a href="index.html" class="back-link">
+            <i data-lucide="arrow-left" size="18"></i> Kembali ke Modul Cahaya
+        </a>
+    </nav>
+
+    <div class="container">
+        <div class="header-title">
+            <h1>Simulasi Hukum Snellius</h1>
+            <p>Eksplorasi interaktif pemantulan dan pembiasan cahaya antar dua medium.</p>
+        </div>
+
+        <div class="simulation-wrapper">
+            <div class="canvas-container">
+                <canvas id="opticsCanvas" width="500" height="400"></canvas>
+            </div>
+            
+            <div class="controls">
+                <h3><i data-lucide="sliders-horizontal"></i> Parameter Optik</h3>
+                
+                <div class="control-group">
+                    <label>
+                        Sudut Datang (&theta;₁)
+                        <span class="value-display" id="angleVal">45&deg;</span>
+                    </label>
+                    <input type="range" id="angleSlider" min="0" max="89" value="45">
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        Indeks Bias Medium 1 (n₁)
+                        <span class="value-display" id="n1Val">1.00 (Udara)</span>
+                    </label>
+                    <input type="range" id="n1Slider" min="1" max="2.5" step="0.01" value="1.00">
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        Indeks Bias Medium 2 (n₂)
+                        <span class="value-display" id="n2Val">1.33 (Air)</span>
+                    </label>
+                    <input type="range" id="n2Slider" min="1" max="2.5" step="0.01" value="1.33">
+                </div>
+
+                <div class="info-box" id="calcInfo">
+                    Sudut Pantul: 45.0&deg;<br>
+                    Sudut Bias: 32.1&deg;
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-section">
+            <div class="quiz-header">
+                <i data-lucide="brain-circuit" size="28"></i>
+                <h2>Uji Pemahaman</h2>
+            </div>
+
+            <form id="quizForm">
+                <div class="question-card">
+                    <div class="question-text">1. Berdasarkan simulasi di atas, bagaimana hubungan antara sudut datang dan sudut pantul?</div>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q1" value="a"> Sudut datang selalu lebih besar dari sudut pantul.</label>
+                        <label class="option-label"><input type="radio" name="q1" value="b"> Sudut datang selalu sama dengan sudut pantul.</label>
+                        <label class="option-label"><input type="radio" name="q1" value="c"> Sudut datang selalu lebih kecil dari sudut pantul.</label>
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-text">2. Apa yang terjadi pada sinar bias jika cahaya merambat dari medium yang kurang rapat (Udara, n=1) ke medium yang lebih rapat (Kaca, n=1.5)?</div>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q2" value="a"> Sinar dibiaskan mendekati garis normal.</label>
+                        <label class="option-label"><input type="radio" name="q2" value="b"> Sinar dibiaskan menjauhi garis normal.</label>
+                        <label class="option-label"><input type="radio" name="q2" value="c"> Sinar diteruskan lurus tanpa dibiaskan.</label>
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-text">3. Pemantulan Sempurna (Total Internal Reflection) HANYA dapat terjadi jika...</div>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q3" value="a"> Cahaya merambat dari medium renggang ke medium rapat.</label>
+                        <label class="option-label"><input type="radio" name="q3" value="b"> Indeks bias medium 1 sama dengan medium 2.</label>
+                        <label class="option-label"><input type="radio" name="q3" value="c"> Cahaya merambat dari medium rapat ke renggang dengan sudut melebihi sudut kritis.</label>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-submit" onclick="checkQuiz()">
+                    <i data-lucide="check-circle"></i> Periksa Jawaban
+                </button>
+                <div id="quizResult" class="quiz-result"></div>
+            </form>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 30px; color: var(--text-light); font-size: 0.9rem;">
+        <p>&copy; 2026 PhysLearn - Modul Interaktif</p>
+    </footer>
+
+    <script>
+        // Inisialisasi Lucide Icons
+        lucide.createIcons();
+
+        // --- SIMULASI OPTIK (CANVAS) ---
+        const canvas = document.getElementById('opticsCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const angleSlider = document.getElementById('angleSlider');
+        const n1Slider = document.getElementById('n1Slider');
+        const n2Slider = document.getElementById('n2Slider');
+        
+        const angleVal = document.getElementById('angleVal');
+        const n1Val = document.getElementById('n1Val');
+        const n2Val = document.getElementById('n2Val');
+        const calcInfo = document.getElementById('calcInfo');
+
+        function getMediumName(n) {
+            n = parseFloat(n);
+            if(n === 1.00) return " (Udara)";
+            if(n >= 1.33 && n <= 1.35) return " (Air)";
+            if(n >= 1.50 && n <= 1.55) return " (Kaca)";
+            if(n >= 2.40 && n <= 2.45) return " (Intan)";
+            return "";
+        }
+
+        function drawSimulation() {
+            const width = canvas.width;
+            const height = canvas.height;
+            const cx = width / 2;
+            const cy = height / 2;
+            
+            // Get values
+            const theta1_deg = parseFloat(angleSlider.value);
+            const n1 = parseFloat(n1Slider.value);
+            const n2 = parseFloat(n2Slider.value);
+            
+            // Update labels
+            angleVal.innerHTML = `${theta1_deg}&deg;`;
+            n1Val.innerHTML = `${n1.toFixed(2)}${getMediumName(n1)}`;
+            n2Val.innerHTML = `${n2.toFixed(2)}${getMediumName(n2)}`;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+
+            // Draw Backgrounds (Medium 1 & 2)
+            ctx.fillStyle = '#f0fdfc'; // Top medium
+            ctx.fillRect(0, 0, width, cy);
+            ctx.fillStyle = '#fff9e6'; // Bottom medium
+            ctx.fillRect(0, cy, width, cy);
+
+            // Draw Boundary
+            ctx.beginPath();
+            ctx.moveTo(0, cy);
+            ctx.lineTo(width, cy);
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Draw Normal Line
+            ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(cx, 0);
+            ctx.lineTo(cx, height);
+            ctx.strokeStyle = '#7a4850';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.setLineDash([]); // Reset
+
+            // Math Setup
+            const theta1_rad = theta1_deg * (Math.PI / 180);
+            const L = 200; // Line length
+
+            // 1. Draw Incident Ray (Sinar Datang) - Top Left
+            ctx.beginPath();
+            ctx.moveTo(cx - L * Math.sin(theta1_rad), cy - L * Math.cos(theta1_rad));
+            ctx.lineTo(cx, cy);
+            ctx.strokeStyle = '#f9aab4'; // Accent color
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Draw Arrow for Incident Ray
+            drawArrow(cx - (L/2) * Math.sin(theta1_rad), cy - (L/2) * Math.cos(theta1_rad), theta1_rad, '#f9aab4', true);
+
+            // 2. Draw Reflected Ray (Sinar Pantul) - Top Right
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + L * Math.sin(theta1_rad), cy - L * Math.cos(theta1_rad));
+            ctx.strokeStyle = '#f9aab4'; 
+            ctx.lineWidth = 3;
+            ctx.globalAlpha = 0.6; // Slightly transparent to differentiate
+            ctx.stroke();
+            ctx.globalAlpha = 1.0;
+
+            // 3. Calculate and Draw Refracted Ray (Sinar Bias)
+            const sin_theta2 = (n1 / n2) * Math.sin(theta1_rad);
+            let infoText = `Sudut Pantul: ${theta1_deg.toFixed(1)}&deg;<br>`;
+
+            if (sin_theta2 > 1) {
+                // Total Internal Reflection
+                infoText += `<span style="color: #e63946; font-weight: 600;">Pemantulan Sempurna (TIR)</span>`;
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(cx + L * Math.sin(theta1_rad), cy - L * Math.cos(theta1_rad));
+                ctx.strokeStyle = '#e63946'; // Red for TIR intensity
+                ctx.lineWidth = 4;
+                ctx.stroke();
+            } else {
+                // Normal Refraction
+                const theta2_rad = Math.asin(sin_theta2);
+                const theta2_deg = theta2_rad * (180 / Math.PI);
+                infoText += `Sudut Bias: ${theta2_deg.toFixed(1)}&deg;`;
+
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(cx + L * Math.sin(theta2_rad), cy + L * Math.cos(theta2_rad));
+                ctx.strokeStyle = '#15b5b0'; // Primary color
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Draw Arrow for Refracted Ray
+                drawArrow(cx + (L/2) * Math.sin(theta2_rad), cy + (L/2) * Math.cos(theta2_rad), theta2_rad, '#15b5b0', false);
+            }
+
+            calcInfo.innerHTML = infoText;
+        }
+
+        // Helper function to draw directional arrows on the light rays
+        function drawArrow(x, y, angle, color, isIncident) {
+            ctx.save();
+            ctx.translate(x, y);
+            // Rotate based on whether it's coming in or going out
+            if(isIncident) {
+                ctx.rotate(angle);
+            } else {
+                ctx.rotate(Math.PI - angle); 
+            }
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-8, -12);
+            ctx.lineTo(8, -12);
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // Event Listeners for Sliders
+        angleSlider.addEventListener('input', drawSimulation);
+        n1Slider.addEventListener('input', drawSimulation);
+        n2Slider.addEventListener('input', drawSimulation);
+
+        // Initial Draw
+        drawSimulation();
+
+        // --- KUIS (MICRO-DRILLING) ---
+        function checkQuiz() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            const q3 = document.querySelector('input[name="q3"]:checked');
+            const resultBox = document.getElementById('quizResult');
+
+            if (!q1 || !q2 || !q3) {
+                resultBox.className = 'quiz-result result-warning';
+                resultBox.innerHTML = '⚠️ Silakan jawab semua pertanyaan terlebih dahulu sebelum memeriksa hasil.';
+                resultBox.style.display = 'block';
+                return;
+            }
+
+            let score = 0;
+            if (q1.value === 'b') score++;
+            if (q2.value === 'a') score++;
+            if (q3.value === 'c') score++;
+
+            if (score === 3) {
+                resultBox.className = 'quiz-result result-success';
+                resultBox.innerHTML = '🎉 Luar Biasa! Anda menjawab semua pertanyaan dengan benar (Skor 100). Konsep pemantulan dan pembiasan sudah Anda kuasai dengan baik.';
+            } else {
+                resultBox.className = 'quiz-result result-warning';
+                resultBox.innerHTML = `💡 Anda menjawab ${score} dari 3 dengan benar. Coba tinjau kembali simulasi di atas, perhatikan bagaimana pergerakan sinar dan nilai indeks bias!`;
+            }
+            resultBox.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perpindahan Kalor - PhysLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Navigasi */
+        nav {
+            padding: 1.5rem 10%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            gap: 12px;
+        }
+
+        /* Header */
+        header {
+            padding: 50px 10% 30px;
+            text-align: center;
+            background: linear-gradient(180deg, #f0fdfc 0%, var(--bg) 100%);
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            padding: 20px 10% 80px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        /* Simulasi Interaktif */
+        .sim-container {
+            background: #fafafa;
+            border: 2px solid var(--primary);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 50px;
+        }
+
+        .sim-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .sim-btn {
+            padding: 10px 25px;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            background: white;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sim-btn.active, .sim-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .sim-stage {
+            height: 300px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .sim-desc {
+            text-align: center;
+            background: var(--secondary);
+            padding: 15px;
+            border-radius: 8px;
+            color: var(--text);
+            font-weight: 500;
+            min-height: 80px;
+        }
+
+        /* Elemen Animasi Simulasi */
+        .rod {
+            width: 50%;
+            height: 40px;
+            background: #d1d5db;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            position: relative;
+            z-index: 2;
+        }
+        .particle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            transition: background 0.8s ease;
+        }
+        .fire-source {
+            position: absolute;
+            left: 15%;
+            color: var(--accent);
+            animation: flicker 1s infinite alternate;
+        }
+        
+        .pot {
+            width: 140px;
+            height: 140px;
+            border: 4px solid var(--text);
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .water {
+            width: 100%;
+            height: 75%;
+            background: rgba(21, 181, 176, 0.2);
+            position: absolute;
+            bottom: 0;
+        }
+        .convection-arrow {
+            position: absolute;
+            color: var(--primary);
+            animation: circulate 2s linear infinite;
+        }
+        
+        .sun {
+            position: absolute;
+            left: 20%;
+            color: var(--secondary);
+            animation: pulse 2s infinite alternate;
+        }
+        .earth {
+            position: absolute;
+            right: 20%;
+            color: var(--primary);
+        }
+        .wave {
+            position: absolute;
+            color: var(--accent);
+            animation: radiate 2s linear infinite;
+        }
+
+        /* Keyframes */
+        @keyframes flicker { 0% { transform: scale(1); opacity: 0.8;} 100% { transform: scale(1.1); opacity: 1;} }
+        @keyframes circulate { 
+            0% { transform: translateY(30px) scale(0.8); opacity: 0; } 
+            20% { opacity: 1; } 
+            80% { opacity: 1; } 
+            100% { transform: translateY(-30px) scale(1.2); opacity: 0; } 
+        }
+        @keyframes radiate { 
+            0% { left: 30%; opacity: 1; transform: scale(0.8); } 
+            100% { left: 65%; opacity: 0; transform: scale(1.2); } 
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
+
+        /* Kuis Micro-drilling */
+        .quiz-container {
+            margin-bottom: 60px;
+        }
+        .quiz-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .quiz-card p {
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option-btn {
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            color: var(--text);
+            text-align: left;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .option-btn:hover { border-color: var(--primary); }
+        .option-btn.correct {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .option-btn.wrong {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+            align-items: flex-start;
+            gap: 8px;
+            background: #f9f9f9;
+        }
+
+        /* Video Section */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* Rasio 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 15px;
+            border: 2px solid #f0f0f0;
+            background: #000;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="back-link">
+            <i data-lucide="arrow-left"></i> Modul Termodinamika
+        </a>
+        <div style="font-weight: 700; color: var(--primary);">PhysLearn.</div>
+    </nav>
+
+    <header>
+        <h1>Perpindahan Kalor</h1>
+        <p>Eksplorasi mekanisme konduksi, konveksi, dan radiasi melalui simulasi interaktif.</p>
+    </header>
+
+    <div class="container">
+        <h2 class="section-title"><i data-lucide="play-square"></i> Simulasi Interaktif</h2>
+        <div class="sim-container">
+            <div class="sim-controls">
+                <button class="sim-btn active" id="btn-konduksi" onclick="loadSim('konduksi')">
+                    <i data-lucide="move-right"></i> Konduksi
+                </button>
+                <button class="sim-btn" id="btn-konveksi" onclick="loadSim('konveksi')">
+                    <i data-lucide="refresh-cw"></i> Konveksi
+                </button>
+                <button class="sim-btn" id="btn-radiasi" onclick="loadSim('radiasi')">
+                    <i data-lucide="sun"></i> Radiasi
+                </button>
+            </div>
+            <div class="sim-stage" id="sim-stage">
+                </div>
+            <div class="sim-desc" id="sim-desc">
+                </div>
+        </div>
+
+        <h2 class="section-title"><i data-lucide="brain-circuit"></i> Micro-Drilling Kuis</h2>
+        <div class="quiz-container">
+            
+            <div class="quiz-card">
+                <p>1. Proses perpindahan kalor melalui suatu zat padat tanpa disertai perpindahan partikel zat tersebut dinamakan...</p>
+                <div class="options">
+                    <button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, 'Konduksi terjadi pada benda padat dimana energi berpindah akibat getaran antar partikel tanpa partikel tersebut ikut berpindah.')">A. Konduksi</button>
+                    <button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'Konduksi terjadi pada benda padat dimana energi berpindah akibat getaran antar partikel tanpa partikel tersebut ikut berpindah.')">B. Konveksi</button>
+                    <button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'Konduksi terjadi pada benda padat dimana energi berpindah akibat getaran antar partikel tanpa partikel tersebut ikut berpindah.')">C. Radiasi</button>
+                </div>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="quiz-card">
+                <p>2. Terjadinya fenomena angin darat dan angin laut merupakan contoh aplikasi dari perpindahan panas secara...</p>
+                <div class="options">
+                    <button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'Angin terjadi karena adanya perbedaan tekanan dan suhu yang menyebabkan aliran massa udara. Perpindahan panas melalui aliran fluida disebut konveksi.')">A. Konduksi</button>
+                    <button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, 'Angin terjadi karena adanya perbedaan tekanan dan suhu yang menyebabkan aliran massa udara. Perpindahan panas melalui aliran fluida disebut konveksi.')">B. Konveksi</button>
+                    <button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'Angin terjadi karena adanya perbedaan tekanan dan suhu yang menyebabkan aliran massa udara. Perpindahan panas melalui aliran fluida disebut konveksi.')">C. Radiasi</button>
+                </div>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="quiz-card">
+                <p>3. Energi panas dari matahari dapat sampai ke bumi meskipun harus melewati ruang hampa udara. Hal ini disebabkan perpindahan kalor tersebut terjadi secara...</p>
+                <div class="options">
+                    <button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'Radiasi adalah perpindahan panas dalam bentuk gelombang elektromagnetik, sehingga tidak membutuhkan medium atau zat perantara.')">A. Induksi</button>
+                    <button class="option-btn" data-correct="false" onclick="checkAnswer(this, false, 'Radiasi adalah perpindahan panas dalam bentuk gelombang elektromagnetik, sehingga tidak membutuhkan medium atau zat perantara.')">B. Konveksi</button>
+                    <button class="option-btn" data-correct="true" onclick="checkAnswer(this, true, 'Radiasi adalah perpindahan panas dalam bentuk gelombang elektromagnetik, sehingga tidak membutuhkan medium atau zat perantara.')">C. Radiasi</button>
+                </div>
+                <div class="feedback"></div>
+            </div>
+
+        </div>
+
+        <h2 class="section-title"><i data-lucide="video"></i> Kelas Pendalaman (> 30 Menit)</h2>
+        <p style="margin-bottom: 20px;">Tonton pembahasan mendalam mengenai Termodinamika & Perpindahan Kalor berikut untuk memperkuat pondasi konseptual Anda.</p>
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/6cL3fUn7lI0" title="Pembahasan Fisika Kalor" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Data Simulasi
+        const simData = {
+            konduksi: {
+                html: `
+                    <i data-lucide="flame" class="fire-source" width="60" height="60"></i>
+                    <div class="rod">
+                        <div class="particle" style="transition-delay: 0s;"></div>
+                        <div class="particle" style="transition-delay: 0.4s;"></div>
+                        <div class="particle" style="transition-delay: 0.8s;"></div>
+                        <div class="particle" style="transition-delay: 1.2s;"></div>
+                        <div class="particle" style="transition-delay: 1.6s;"></div>
+                    </div>
+                `,
+                desc: "<b>Konduksi:</b> Perpindahan panas melalui zat padat tanpa disertai perpindahan partikel. Ujung material yang dipanaskan membuat partikel bergetar dan mentransfer energi kinetik ke partikel sebelahnya secara berurutan."
+            },
+            konveksi: {
+                html: `
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <div class="pot">
+                            <div class="water"></div>
+                            <i data-lucide="chevrons-up" class="convection-arrow" style="left: 30%; animation-delay: 0s;"></i>
+                            <i data-lucide="chevrons-up" class="convection-arrow" style="right: 30%; animation-delay: 1s;"></i>
+                        </div>
+                        <i data-lucide="flame" style="color: var(--accent); margin-top: 8px; animation: flicker 1s infinite alternate;" width="40" height="40"></i>
+                    </div>
+                `,
+                desc: "<b>Konveksi:</b> Perpindahan panas yang disertai perpindahan aliran zat perantaranya (biasanya cair/gas). Fluida yang panas memuai, massa jenisnya berkurang sehingga naik, dan fluida dingin turun menggantikannya."
+            },
+            radiasi: {
+                html: `
+                    <i data-lucide="sun" class="sun" width="80" height="80"></i>
+                    <i data-lucide="waves" class="wave" width="40" height="40" style="top: 35%;"></i>
+                    <i data-lucide="waves" class="wave" width="40" height="40" style="top: 55%; animation-delay: 1s;"></i>
+                    <i data-lucide="globe-2" class="earth" width="80" height="80"></i>
+                `,
+                desc: "<b>Radiasi:</b> Perpindahan panas pancaran tanpa memerlukan medium atau zat perantara. Energi ditransfer sepenuhnya dalam bentuk gelombang elektromagnetik."
+            }
+        }
+
+        // Fungsi Load Simulasi
+        function loadSim(type) {
+            // Update tombol aktif
+            document.querySelectorAll('.sim-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + type).classList.add('active');
+            
+            // Injeksi HTML ke stage
+            const stage = document.getElementById('sim-stage');
+            stage.innerHTML = simData[type].html;
+            document.getElementById('sim-desc').innerHTML = simData[type].desc;
+            
+            lucide.createIcons();
+
+            // Trigger animasi khusus konduksi
+            if(type === 'konduksi') {
+                setTimeout(() => {
+                    document.querySelectorAll('.particle').forEach(p => {
+                        p.style.background = 'var(--accent)';
+                    });
+                }, 100);
+            }
+        }
+
+        // Fungsi Pengecekan Kuis
+        function checkAnswer(btn, isCorrect, explanation) {
+            const parent = btn.closest('.options');
+            
+            // Kunci semua tombol dalam soal ini agar tidak bisa diklik lagi
+            parent.querySelectorAll('.option-btn').forEach(b => {
+                b.disabled = true;
+                b.style.pointerEvents = 'none';
+            });
+            
+            const feedback = btn.parentElement.nextElementSibling;
+            feedback.style.display = 'flex';
+
+            if(isCorrect) {
+                btn.classList.add('correct');
+                btn.innerHTML += ' <i data-lucide="check-circle" width="18"></i>';
+                feedback.style.color = 'var(--primary)';
+                feedback.style.borderLeft = '4px solid var(--primary)';
+                feedback.innerHTML = `<i data-lucide="check-square" width="24" style="flex-shrink:0;"></i> <div><b>Tepat Sekali!</b> <br> ${explanation}</div>`;
+            } else {
+                btn.classList.add('wrong');
+                btn.innerHTML += ' <i data-lucide="x-circle" width="18"></i>';
+                feedback.style.color = 'var(--text)';
+                feedback.style.borderLeft = '4px solid var(--accent)';
+                feedback.innerHTML = `<i data-lucide="alert-circle" width="24" style="color:var(--accent); flex-shrink:0;"></i> <div><b>Kurang Tepat.</b> <br> ${explanation}</div>`;
+                
+                // Highlight jawaban yang benar
+                const correctBtn = parent.querySelector('[data-correct="true"]');
+                correctBtn.classList.add('correct');
+                correctBtn.innerHTML += ' <i data-lucide="check-circle" width="18"></i>';
+            }
+            
+            lucide.createIcons();
+        }
+
+        // Inisialisasi Pertama
+        window.onload = () => {
+            lucide.createIcons();
+            loadSim('konduksi');
+        }
+    </script>
+</body>
+</html>

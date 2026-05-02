@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Gesekan - simuphys</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --surface-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover { color: var(--primary); }
+
+        .logo-small {
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 5%;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+
+        /* Simulation Area */
+        .sim-area {
+            background: #f8fafc;
+            border: 2px solid #f1f5f9;
+            border-radius: 20px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            min-height: 400px;
+        }
+
+        .sim-header {
+            margin-bottom: auto;
+        }
+
+        .sim-header h2 { font-size: 1.5rem; color: var(--text); }
+        .sim-header p { color: var(--text-light); font-size: 0.9rem; }
+
+        .status-badge {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: var(--surface-color);
+            color: var(--text);
+        }
+
+        /* Environment */
+        .environment {
+            position: relative;
+            height: 200px;
+            margin-top: 40px;
+        }
+
+        .surface {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 20px;
+            background-color: var(--surface-color);
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .block {
+            position: absolute;
+            bottom: 20px;
+            left: 50px;
+            width: 80px;
+            height: 80px;
+            background-color: var(--secondary);
+            border: 3px solid var(--text);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--text);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Vectors */
+        .vector {
+            position: absolute;
+            top: 50%;
+            height: 4px;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            transition: width 0.1s ease-out;
+        }
+
+        .vector-pull {
+            left: 100%;
+            background-color: var(--primary);
+            width: 0px;
+        }
+
+        .vector-pull::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 12px solid var(--primary);
+        }
+
+        .vector-friction {
+            right: 100%;
+            background-color: var(--accent);
+            width: 0px;
+        }
+
+        .vector-friction::after {
+            content: '';
+            position: absolute;
+            left: -10px;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-right: 12px solid var(--accent);
+        }
+
+        .vector-label {
+            position: absolute;
+            top: -25px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .vector-pull .vector-label { right: 0; color: var(--primary); }
+        .vector-friction .vector-label { left: 0; color: var(--accent); }
+
+        /* Controls Panel */
+        .controls {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .control-group { display: flex; flex-direction: column; gap: 8px; }
+        
+        .control-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        select {
+            padding: 10px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            outline: none;
+            font-size: 0.9rem;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        select:focus { border-color: var(--primary); }
+
+        /* Data Dashboard */
+        .dashboard {
+            background: #f0fdfc;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            border-bottom: 1px dashed rgba(21, 181, 176, 0.2);
+            padding-bottom: 5px;
+        }
+        .data-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .data-val { font-weight: 700; font-family: monospace; font-size: 1rem; color: var(--primary); }
+
+        .btn-reset {
+            background: white;
+            border: 2px solid var(--text-light);
+            color: var(--text);
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-reset:hover {
+            background: var(--text-light);
+            color: white;
+        }
+
+        @media (max-width: 900px) {
+            .container { grid-template-columns: 1fr; }
+            .environment { overflow-x: hidden; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="back-btn">
+            <i data-lucide="chevron-left"></i> Kembali ke Mekanika
+        </a>
+        <div class="logo-small">
+            <i data-lucide="atom"></i> simuphys
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="sim-area">
+            <div class="sim-header">
+                <h2>Laboratorium Gesekan</h2>
+                <p>Amati gaya yang bekerja saat balok ditarik di berbagai permukaan.</p>
+            </div>
+            
+            <div id="statusBadge" class="status-badge">Diam (Statis)</div>
+
+            <div class="environment">
+                <div class="surface" id="surfaceEl"></div>
+                <div class="block" id="block">
+                    <span id="blockMassLabel">5kg</span>
+                    
+                    <div class="vector vector-pull" id="vectorPull">
+                        <span class="vector-label" id="labelPull">0 N</span>
+                    </div>
+                    
+                    <div class="vector vector-friction" id="vectorFriction">
+                        <span class="vector-label" id="labelFriction">0 N</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>
+                    <span><i data-lucide="layers" style="width:16px; display:inline-block; vertical-align:middle"></i> Jenis Permukaan</span>
+                </label>
+                <select id="surfaceSelect">
+                    <option value="ice">Es (Sangat Licin)</option>
+                    <option value="wood" selected>Kayu (Sedang)</option>
+                    <option value="rubber">Karet (Kasar)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>
+                    <span>Massa Balok (m)</span>
+                    <span id="massVal">5 kg</span>
+                </label>
+                <input type="range" id="massSlider" min="1" max="20" step="1" value="5">
+            </div>
+
+            <div class="control-group">
+                <label>
+                    <span style="color: var(--primary);">Gaya Tarik (F)</span>
+                    <span id="forceVal">0 N</span>
+                </label>
+                <input type="range" id="forceSlider" min="0" max="150" step="1" value="0">
+            </div>
+
+            <div class="dashboard">
+                <div class="data-row">
+                    <span>Gesekan Statis Maks (<span style="font-family:serif">f<sub>s</sub></span>)</span>
+                    <span class="data-val" id="dataFs">0.0 N</span>
+                </div>
+                <div class="data-row">
+                    <span>Gaya Gesek Aktual (<span style="font-family:serif">f</span>)</span>
+                    <span class="data-val" id="dataFact" style="color: var(--accent)">0.0 N</span>
+                </div>
+                <div class="data-row">
+                    <span>Percepatan (<span style="font-family:serif">a</span>)</span>
+                    <span class="data-val" id="dataAcc">0.00 m/s²</span>
+                </div>
+            </div>
+
+            <button class="btn-reset" id="btnReset">
+                <i data-lucide="rotate-ccw" style="width:18px"></i> Reset Posisi Balok
+            </button>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Physics Constants & Variables
+        const G = 9.8; // Gravitasi m/s^2
+        const surfaces = {
+            ice: { name: 'Es', muS: 0.1, muK: 0.05, color: '#e0f2fe' },
+            wood: { name: 'Kayu', muS: 0.4, muK: 0.3, color: '#fcd34d' },
+            rubber: { name: 'Karet', muS: 0.8, muK: 0.6, color: '#334155' }
+        };
+
+        // State
+        let mass = 5;
+        let appliedForce = 0;
+        let currentSurface = 'wood';
+        
+        let position = 50; // px
+        let velocity = 0; // px/s
+        let isMoving = false;
+        let lastTime = 0;
+
+        // DOM Elements
+        const massSlider = document.getElementById('massSlider');
+        const forceSlider = document.getElementById('forceSlider');
+        const surfaceSelect = document.getElementById('surfaceSelect');
+        const btnReset = document.getElementById('btnReset');
+        
+        const block = document.getElementById('block');
+        const surfaceEl = document.getElementById('surfaceEl');
+        const vectorPull = document.getElementById('vectorPull');
+        const vectorFriction = document.getElementById('vectorFriction');
+        
+        // Update UI Function
+        function updatePhysics() {
+            const muS = surfaces[currentSurface].muS;
+            const muK = surfaces[currentSurface].muK;
+            const normalForce = mass * G;
+            
+            const maxStaticFriction = muS * normalForce;
+            const kineticFriction = muK * normalForce;
+            
+            let actualFriction = 0;
+            let netForce = 0;
+            let acceleration = 0; // m/s^2
+
+            if (!isMoving) {
+                if (appliedForce <= maxStaticFriction) {
+                    actualFriction = appliedForce;
+                    netForce = 0;
+                } else {
+                    isMoving = true;
+                }
+            }
+            
+            if (isMoving) {
+                actualFriction = kineticFriction;
+                netForce = appliedForce - actualFriction;
+                acceleration = netForce / mass;
+
+                // Stop if friction overcomes applied force and object stops
+                if (velocity <= 0 && netForce < 0) {
+                    isMoving = false;
+                    velocity = 0;
+                    acceleration = 0;
+                    actualFriction = appliedForce; // Reverts to static balancing
+                }
+            }
+
+            // Update Labels & Vectors
+            document.getElementById('dataFs').innerText = maxStaticFriction.toFixed(1) + ' N';
+            document.getElementById('dataFact').innerText = actualFriction.toFixed(1) + ' N';
+            document.getElementById('dataAcc').innerText = acceleration.toFixed(2) + ' m/s²';
+            
+            // Visual Vectors (Scaling: 1 N = 1.5px length for visualization)
+            vectorPull.style.width = (appliedForce * 1.5) + 'px';
+            document.getElementById('labelPull').innerText = appliedForce + ' N';
+            
+            vectorFriction.style.width = (actualFriction * 1.5) + 'px';
+            document.getElementById('labelFriction').innerText = actualFriction.toFixed(1) + ' N';
+
+            // Status Badge
+            const badge = document.getElementById('statusBadge');
+            if (isMoving) {
+                badge.innerText = 'Bergerak (Kinetis)';
+                badge.style.background = 'var(--primary)';
+                badge.style.color = 'white';
+            } else {
+                badge.innerText = 'Diam (Statis)';
+                badge.style.background = 'var(--surface-color)';
+                badge.style.color = 'var(--text)';
+            }
+
+            return acceleration;
+        }
+
+        // Animation Loop
+        function animate(timestamp) {
+            if (!lastTime) lastTime = timestamp;
+            const deltaTime = (timestamp - lastTime) / 1000; // in seconds
+            lastTime = timestamp;
+
+            const acceleration = updatePhysics();
+
+            if (isMoving) {
+                // Pixel conversion (arbitrary scale for visual speed)
+                const accelPx = acceleration * 20; 
+                velocity += accelPx * deltaTime;
+                position += velocity * deltaTime;
+
+                // Reset position if goes off screen
+                const containerWidth = document.querySelector('.environment').offsetWidth;
+                if (position > containerWidth) {
+                    position = 50;
+                    velocity = 0;
+                }
+
+                block.style.left = position + 'px';
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // Event Listeners
+        massSlider.addEventListener('input', (e) => {
+            mass = parseFloat(e.target.value);
+            document.getElementById('massVal').innerText = mass + ' kg';
+            document.getElementById('blockMassLabel').innerText = mass + 'kg';
+        });
+
+        forceSlider.addEventListener('input', (e) => {
+            appliedForce = parseFloat(e.target.value);
+            document.getElementById('forceVal').innerText = appliedForce + ' N';
+        });
+
+        surfaceSelect.addEventListener('change', (e) => {
+            currentSurface = e.target.value;
+            surfaceEl.style.backgroundColor = surfaces[currentSurface].color;
+            
+            // Force stop when surface changes to prevent weird physics jumps
+            isMoving = false;
+            velocity = 0;
+            forceSlider.value = 0;
+            appliedForce = 0;
+            document.getElementById('forceVal').innerText = '0 N';
+        });
+
+        btnReset.addEventListener('click', () => {
+            position = 50;
+            velocity = 0;
+            isMoving = false;
+            forceSlider.value = 0;
+            appliedForce = 0;
+            document.getElementById('forceVal').innerText = '0 N';
+            block.style.left = position + 'px';
+        });
+
+        // Initialize
+        surfaceEl.style.backgroundColor = surfaces[currentSurface].color;
+        requestAnimationFrame(animate);
+
+    </script>
+</body>
+</html>

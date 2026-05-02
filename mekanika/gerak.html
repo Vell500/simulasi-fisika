@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Gerak Lurus - simuphys</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --track-bg: #f4f4f4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Navigasi */
+        nav {
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover { color: var(--primary); }
+        .logo-small { font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+
+        /* Container Utama */
+        .container {
+            padding: 40px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header-title h1 { color: var(--text); font-size: 2rem; }
+        .header-title p { color: var(--text-light); }
+
+        /* Layout Simulasi */
+        .simulation-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+        }
+
+        /* Panel Kontrol */
+        .control-panel {
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        input[type=range] {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover { background: #129d99; }
+
+        .btn-secondary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-secondary:hover { background: #e59ba4; }
+
+        /* Area Simulasi */
+        .simulation-area {
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 16px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Telemetri (Data Real-time) */
+        .telemetry {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .data-card {
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--secondary);
+        }
+
+        .data-card h4 { font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px;}
+        .data-card .value { font-size: 2rem; font-weight: 700; color: var(--text); margin-top: 5px; }
+        .data-card .unit { font-size: 1rem; font-weight: 500; color: var(--primary); }
+
+        /* Track Simulasi */
+        .track-container {
+            position: relative;
+            height: 120px;
+            background: var(--track-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+            padding-bottom: 10px;
+        }
+
+        .track-lines {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 20px;
+            background-image: linear-gradient(90deg, #ccc 2px, transparent 2px);
+            background-size: 100px 100%;
+            opacity: 0.5;
+        }
+
+        .car-object {
+            position: absolute;
+            left: 20px;
+            bottom: 10px;
+            width: 60px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 5px 15px rgba(21, 181, 176, 0.4);
+            transform: translateX(0); /* Controlled by JS */
+            z-index: 2;
+        }
+
+        .car-object::after {
+            content: '';
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 15px;
+            background: var(--secondary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Marker Garis Finish */
+        .finish-line {
+            position: absolute;
+            right: 40px;
+            bottom: 0;
+            height: 100%;
+            width: 10px;
+            background: repeating-linear-gradient(45deg, var(--text), var(--text) 10px, white 10px, white 20px);
+            opacity: 0.8;
+        }
+
+        @media (max-width: 900px) {
+            .simulation-grid { grid-template-columns: 1fr; }
+            .telemetry { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="back-btn">
+            <i data-lucide="chevron-left"></i> Modul Mekanika
+        </a>
+        <div class="logo-small">
+            <i data-lucide="atom"></i> simuphys
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header-title">
+            <h1>Simulasi Gerak Lurus (GLB & GLBB)</h1>
+            <p>Eksplorasi hubungan antara kecepatan, percepatan, jarak, dan waktu secara interaktif.</p>
+        </div>
+
+        <div class="simulation-grid">
+            <div class="control-panel">
+                <div class="control-group">
+                    <label>
+                        <span>Kecepatan Awal (v₀)</span>
+                        <span id="v0-val">0 m/s</span>
+                    </label>
+                    <input type="range" id="v0" min="0" max="20" step="1" value="0">
+                </div>
+                
+                <div class="control-group">
+                    <label>
+                        <span>Percepatan (a)</span>
+                        <span id="a-val">2 m/s²</span>
+                    </label>
+                    <input type="range" id="a" min="-5" max="10" step="1" value="2">
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn-primary" id="btn-start" onclick="toggleSimulation()">
+                        <i data-lucide="play"></i> Mulai
+                    </button>
+                    <button class="btn-secondary" onclick="resetSimulation()">
+                        <i data-lucide="rotate-ccw"></i> Reset
+                    </button>
+                </div>
+                
+                <div style="margin-top: 20px; font-size: 0.8rem; color: var(--text-light); text-align: center;">
+                    Tips: Atur percepatan (a) ke 0 untuk mensimulasikan Gerak Lurus Beraturan (GLB).
+                </div>
+            </div>
+
+            <div class="simulation-area">
+                <div class="telemetry">
+                    <div class="data-card">
+                        <h4>Waktu (t)</h4>
+                        <div class="value"><span id="t-display">0.0</span> <span class="unit">s</span></div>
+                    </div>
+                    <div class="data-card">
+                        <h4>Kecepatan (v)</h4>
+                        <div class="value"><span id="v-display">0.0</span> <span class="unit">m/s</span></div>
+                    </div>
+                    <div class="data-card" style="border-bottom-color: var(--primary);">
+                        <h4>Jarak (s)</h4>
+                        <div class="value"><span id="s-display">0.0</span> <span class="unit">m</span></div>
+                    </div>
+                </div>
+
+                <div class="track-container" id="track">
+                    <div class="track-lines"></div>
+                    <div class="finish-line"></div>
+                    <div class="car-object" id="car">
+                        <i data-lucide="car-front"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inisialisasi Ikon
+        lucide.createIcons();
+
+        // Variabel Fisika & UI
+        let isRunning = false;
+        let animationFrame;
+        let lastTime = 0;
+        
+        let t = 0; // waktu (s)
+        let s = 0; // jarak (m)
+        let v = 0; // kecepatan (m/s)
+        
+        // Konstanta Visual
+        // 1 meter = 5 pixel (agar mobil bisa menempuh jarak yang logis di layar)
+        const PIXELS_PER_METER = 5; 
+        
+        // Elemen DOM
+        const carEl = document.getElementById('car');
+        const trackEl = document.getElementById('track');
+        const v0Input = document.getElementById('v0');
+        const aInput = document.getElementById('a');
+        
+        const tDisplay = document.getElementById('t-display');
+        const vDisplay = document.getElementById('v-display');
+        const sDisplay = document.getElementById('s-display');
+        const btnStart = document.getElementById('btn-start');
+
+        // Update nilai slider secara real-time
+        v0Input.addEventListener('input', (e) => {
+            document.getElementById('v0-val').innerText = e.target.value + ' m/s';
+            if(!isRunning && t === 0) updateTelemetry(0, parseFloat(e.target.value), 0);
+        });
+
+        aInput.addEventListener('input', (e) => {
+            document.getElementById('a-val').innerText = e.target.value + ' m/s²';
+        });
+
+        function updateTelemetry(time, velocity, distance) {
+            tDisplay.innerText = time.toFixed(1);
+            vDisplay.innerText = velocity.toFixed(1);
+            sDisplay.innerText = distance.toFixed(1);
+        }
+
+        function toggleSimulation() {
+            if (isRunning) {
+                // Pause
+                isRunning = false;
+                cancelAnimationFrame(animationFrame);
+                btnStart.innerHTML = '<i data-lucide="play"></i> Lanjut';
+            } else {
+                // Start
+                isRunning = true;
+                lastTime = performance.now();
+                btnStart.innerHTML = '<i data-lucide="pause"></i> Jeda';
+                animationFrame = requestAnimationFrame(step);
+            }
+            lucide.createIcons();
+        }
+
+        function resetSimulation() {
+            isRunning = false;
+            cancelAnimationFrame(animationFrame);
+            
+            t = 0;
+            s = 0;
+            v = parseFloat(v0Input.value);
+            
+            carEl.style.transform = `translateX(0px)`;
+            updateTelemetry(t, v, s);
+            
+            btnStart.innerHTML = '<i data-lucide="play"></i> Mulai';
+            lucide.createIcons();
+        }
+
+        function step(currentTime) {
+            if (!isRunning) return;
+
+            // Delta time dalam detik (dibagi 1000)
+            const dt = (currentTime - lastTime) / 1000;
+            lastTime = currentTime;
+
+            // Ambil parameter dari input
+            const v0 = parseFloat(v0Input.value);
+            const a = parseFloat(aInput.value);
+
+            // Update waktu
+            t += dt;
+
+            // Persamaan GLBB: v = v0 + a*t
+            v = v0 + (a * t);
+            
+            // Cegah kecepatan mundur jika mengerem sampai berhenti (opsional, untuk realisme)
+            if (v < 0 && a < 0) {
+                v = 0;
+                isRunning = false; // Berhenti otomatis
+                btnStart.innerHTML = '<i data-lucide="play"></i> Mulai';
+                lucide.createIcons();
+            }
+
+            // Persamaan GLBB Jarak: s = v0*t + 0.5*a*t^2
+            s = (v0 * t) + (0.5 * a * t * t);
+
+            // Update UI
+            updateTelemetry(t, v, s);
+
+            // Kalkulasi posisi visual (Maksimal mentok di garis finish)
+            const maxTrackWidth = trackEl.clientWidth - 80; // 80 = lebar mobil + padding
+            const visualPosition = s * PIXELS_PER_METER;
+
+            if (visualPosition >= maxTrackWidth) {
+                carEl.style.transform = `translateX(${maxTrackWidth}px)`;
+                isRunning = false;
+                btnStart.innerHTML = '<i data-lucide="rotate-ccw"></i> Selesai';
+                lucide.createIcons();
+            } else {
+                carEl.style.transform = `translateX(${visualPosition}px)`;
+                animationFrame = requestAnimationFrame(step);
+            }
+        }
+
+        // Inisialisasi nilai awal saat halaman dimuat
+        resetSimulation();
+    </script>
+</body>
+</html>

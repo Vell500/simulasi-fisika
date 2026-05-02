@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mekanika - simuphys</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --card-bg: #fdfdfd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Top Navigation Bar */
+        nav {
+            padding: 1rem 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            color: var(--primary);
+        }
+
+        .logo-small {
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Header Section */
+        header {
+            padding: 60px 10% 40px;
+            background: linear-gradient(to bottom, #f0fdfc, #ffffff);
+            text-align: center;
+        }
+
+        .category-label {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+
+        header p {
+            max-width: 700px;
+            margin: 0 auto;
+            color: var(--text-light);
+        }
+
+        /* Sub-navigation Grid */
+        .content-container {
+            padding: 40px 10% 100px;
+        }
+
+        .sub-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .topic-card {
+            background: var(--card-bg);
+            border: 1px solid #eee;
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .topic-card:hover {
+            transform: scale(1.02);
+            border-color: var(--primary);
+            box-shadow: 0 10px 25px rgba(21, 181, 176, 0.08);
+            background: white;
+        }
+
+        .icon-circle {
+            width: 54px;
+            height: 54px;
+            background: #f0fdfc;
+            color: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: 0.3s;
+        }
+
+        .topic-card:hover .icon-circle {
+            background: var(--primary);
+            color: white;
+        }
+
+        .topic-info h3 {
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .topic-info p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 15px;
+        }
+
+        .learn-more {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Decorative Element */
+        .topic-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            background: var(--secondary);
+            opacity: 0.1;
+            clip-path: circle(50% at 100% 100%);
+            transition: 0.3s;
+        }
+
+        .topic-card:hover::after {
+            opacity: 0.2;
+            width: 60px;
+            height: 60px;
+        }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8rem; }
+            .sub-nav-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../index.html" class="back-btn">
+            <i data-lucide="chevron-left"></i> Kembali ke Dashboard
+        </a>
+        <div class="logo-small">
+            <i data-lucide="atom"></i> simuphys
+        </div>
+    </nav>
+
+    <header>
+        <span class="category-label">Modul 01</span>
+        <h1>Mekanika Klasik</h1>
+        <p>Pelajari fondasi utama ilmu fisika yang membahas tentang gerak benda dan penyebabnya melalui pendekatan prinsip-prinsip matematika.</p>
+    </header>
+
+    <main class="content-container">
+        <div class="sub-nav-grid">
+            <a href="gerak.html" class="topic-card">
+                <div class="icon-circle"><i data-lucide="move-right"></i></div>
+                <div class="topic-info">
+                    <h3>Gerak Lurus</h3>
+                    <p>Analisis kinematika pada GLB dan GLBB dengan pendekatan grafik dan rumus percepatan.</p>
+                    <div class="learn-more">Mulai Belajar <i data-lucide="arrow-right" style="width:14px"></i></div>
+                </div>
+            </a>
+
+            <a href="newton.html" class="topic-card">
+                <div class="icon-circle"><i data-lucide="anchor"></i></div>
+                <div class="topic-info">
+                    <h3>Hukum Newton</h3>
+                    <p>Prinsip kelembaman, percepatan, dan aksi-reaksi dalam dinamika gerak benda.</p>
+                    <div class="learn-more">Mulai Belajar <i data-lucide="arrow-right" style="width:14px"></i></div>
+                </div>
+            </a>
+
+            <a href="gesekan.html" class="topic-card">
+                <div class="icon-circle"><i data-lucide="footprints"></i></div>
+                <div class="topic-info">
+                    <h3>Gesekan</h3>
+                    <p>Memahami koefisien gesek statis dan kinetis pada berbagai permukaan bidang.</p>
+                    <div class="learn-more">Mulai Belajar <i data-lucide="arrow-right" style="width:14px"></i></div>
+                </div>
+            </a>
+
+            <a href="energi.html" class="topic-card">
+                <div class="icon-circle"><i data-lucide="battery-charging"></i></div>
+                <div class="topic-info">
+                    <h3>Energi & Usaha</h3>
+                    <p>Transformasi energi potensial, kinetik, dan mekanik serta konsep usaha fisik.</p>
+                    <div class="learn-more">Mulai Belajar <i data-lucide="arrow-right" style="width:14px"></i></div>
+                </div>
+            </a>
+
+            <a href="momentum.html" class="topic-card">
+                <div class="icon-circle"><i data-lucide="combine"></i></div>
+                <div class="topic-info">
+                    <h3>Momentum & Tumbukan</h3>
+                    <p>Studi tentang kekekalan momentum dan jenis-jenis lentingan pada tumbukan benda.</p>
+                    <div class="learn-more">Mulai Belajar <i data-lucide="arrow-right" style="width:14px"></i></div>
+                </div>
+            </a>
+
+            <a href="bandul.html" class="topic-card">
+                <div class="icon-circle"><i data-lucide="timer"></i></div>
+                <div class="topic-info">
+                    <h3>Bandul Sederhana</h3>
+                    <p>Eksplorasi gerak harmonik sederhana melalui periode dan frekuensi ayunan bandul.</p>
+                    <div class="learn-more">Mulai Belajar <i data-lucide="arrow-right" style="width:14px"></i></div>
+                </div>
+            </a>
+        </div>
+    </main>
+
+    <script>
+        // Inisialisasi Lucide Icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

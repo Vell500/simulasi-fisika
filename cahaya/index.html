@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul Cahaya & Optik - PhysLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            padding: 1.2rem 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        /* Header Section */
+        .sub-header {
+            padding: 60px 8% 40px;
+            background: linear-gradient(135deg, #f0fdfc 0%, #fff9e6 100%);
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .breadcrumb {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 15px;
+        }
+
+        .sub-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .sub-header p {
+            max-width: 700px;
+            color: var(--text-light);
+        }
+
+        /* Sub-Navigation Grid */
+        .main-container {
+            padding: 50px 8% 100px;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .nav-card {
+            background: var(--card-bg);
+            border: 1px solid #eee;
+            border-radius: 24px;
+            padding: 35px;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(21, 181, 176, 0.12);
+        }
+
+        .icon-circle {
+            min-width: 60px;
+            height: 60px;
+            background: #f0fdfc;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            transition: 0.3s;
+        }
+
+        .nav-card:hover .icon-circle {
+            background: var(--primary);
+            color: white;
+        }
+
+        .card-content h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .card-content p {
+            font-size: 0.88rem;
+            color: var(--text-light);
+            margin-bottom: 15px;
+        }
+
+        .learn-more {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Experiment Card Styling */
+        .experiment-card {
+            background: linear-gradient(to bottom right, #ffffff, #fffafa);
+            border-left: 5px solid var(--accent);
+        }
+
+        .experiment-card .icon-circle {
+            background: #fff0f2;
+            color: var(--accent);
+        }
+
+        .experiment-card:hover .icon-circle {
+            background: var(--accent);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .sub-header h1 { font-size: 1.8rem; }
+            .nav-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../index.html" class="logo">
+            <i data-lucide="atom"></i> PhysLearn
+        </a>
+        <a href="../index.html" class="back-link">
+            <i data-lucide="arrow-left" size="18"></i> Beranda Utama
+        </a>
+    </nav>
+
+    <section class="sub-header">
+        <div class="breadcrumb">Modul / Cahaya & Optik</div>
+        <h1>Cahaya dan Alat Optik</h1>
+        <p>Pelajari fenomena perambatan cahaya, hukum pemantulan, pembiasan, serta aplikasinya pada instrumen optik modern.</p>
+    </section>
+
+    <main class="main-container">
+        <div class="nav-grid">
+            
+            <a href="pemantulan.html" class="nav-card">
+                <div class="icon-circle"><i data-lucide="refresh-cw"></i></div>
+                <div class="card-content">
+                    <h3>Pemantulan & Pembiasan</h3>
+                    <p>Analisis hukum Snellius dan fenomena pemantulan sempurna pada berbagai medium.</p>
+                    <span class="learn-more">Buka Materi <i data-lucide="chevron-right" size="14"></i></span>
+                </div>
+            </a>
+
+            <a href="cermin.html" class="nav-card">
+                <div class="icon-circle"><i data-lucide="circle-dashed"></i></div>
+                <div class="card-content">
+                    <h3>Lensa & Cermin</h3>
+                    <p>Pembentukan bayangan pada cermin cekung, cembung, serta berbagai jenis lensa.</p>
+                    <span class="learn-more">Buka Materi <i data-lucide="chevron-right" size="14"></i></span>
+                </div>
+            </a>
+
+            <a href="optik.html" class="nav-card">
+                <div class="icon-circle"><i data-lucide="binoculars"></i></div>
+                <div class="card-content">
+                    <h3>Alat Optik</h3>
+                    <p>Prinsip kerja mikroskop, teleskop, lup, dan kamera dalam memperbesar citra.</p>
+                    <span class="learn-more">Buka Materi <i data-lucide="chevron-right" size="14"></i></span>
+                </div>
+            </a>
+
+            <a href="fokus.html" class="nav-card experiment-card">
+                <div class="icon-circle"><i data-lucide="target"></i></div>
+                <div class="card-content">
+                    <h3>Menentukan Fokus Lensa</h3>
+                    <p>Laboratorium Virtual: Prosedur pengukuran jarak fokus lensa menggunakan metode pergeseran.</p>
+                    <span class="learn-more" style="color: var(--accent);">Mulai Praktikum <i data-lucide="chevron-right" size="14"></i></span>
+                </div>
+            </a>
+
+            <a href="snellius.html" class="nav-card experiment-card">
+                <div class="icon-circle"><i data-lucide="flask-conical"></i></div>
+                <div class="card-content">
+                    <h3>Percobaan Hukum Snellius</h3>
+                    <p>Simulasi pengukuran indeks bias material transparan menggunakan sinar laser.</p>
+                    <span class="learn-more" style="color: var(--accent);">Mulai Praktikum <i data-lucide="chevron-right" size="14"></i></span>
+                </div>
+            </a>
+
+        </div>
+    </main>
+
+    <footer style="text-align: center; padding: 40px; color: var(--text-light); border-top: 1px solid #eee;">
+        <p>&copy; 2026 PhysLearn - Departemen Optik</p>
+    </footer>
+
+    <script>
+        // Inisialisasi Ikon
+        lucide.createIcons();
+    </script>
+</body>
+</html>

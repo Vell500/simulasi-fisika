@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Momentum & Tumbukan - simuphys</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --panel-bg: #fdfdfd;
+            --border: #f0f0f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            color: var(--primary);
+        }
+
+        /* Layout */
+        .container {
+            padding: 30px 5%;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+            align-items: start;
+        }
+
+        /* Simulation Area */
+        .simulation-container {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+
+        .sim-header {
+            margin-bottom: 15px;
+        }
+
+        .sim-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        canvas {
+            background: #f4fbfc;
+            border-radius: 10px;
+            width: 100%;
+            border: 1px solid #e0f2f1;
+            display: block;
+        }
+
+        .controls-action {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #119a96;
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: #e6c875;
+        }
+
+        /* Data Panel */
+        .data-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .data-box {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .data-box h4 {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .data-box span {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* Control Panel */
+        .control-panel {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+
+        .control-panel h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+        }
+
+        .slider-group {
+            margin-bottom: 20px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .badge-1 { color: var(--primary); }
+        .badge-2 { color: var(--accent); }
+
+        input[type=range] {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 25px 0;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="back-btn">
+            <i data-lucide="chevron-left"></i> Modul Mekanika
+        </a>
+        <div style="font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="combine"></i> Momentum
+        </div>
+    </nav>
+
+    <div class="container">
+        <main class="simulation-container">
+            <div class="sim-header">
+                <h2>Laboratorium Tumbukan 1D</h2>
+                <p style="font-size: 0.9rem; color: var(--text-light);">Amati hukum kekekalan momentum dengan mengatur parameter di panel samping.</p>
+            </div>
+            
+            <canvas id="simCanvas" width="800" height="250"></canvas>
+            
+            <div class="controls-action">
+                <button class="btn-primary" id="playBtn" onclick="toggleSim()">
+                    <i data-lucide="play"></i> Mulai / Jeda
+                </button>
+                <button class="btn-secondary" onclick="resetSim()">
+                    <i data-lucide="rotate-ccw"></i> Atur Ulang
+                </button>
+            </div>
+
+            <div class="data-panel">
+                <div class="data-box">
+                    <h4>Total Momentum (p)</h4>
+                    <span id="totalP">0 kg m/s</span>
+                </div>
+                <div class="data-box">
+                    <h4>Status Sistem</h4>
+                    <span id="statusTxt" style="color: var(--primary);">Berjalan</span>
+                </div>
+            </div>
+        </main>
+
+        <aside class="control-panel">
+            <h3><i data-lucide="sliders-horizontal"></i> Parameter Objek</h3>
+            
+            <div class="slider-group">
+                <div class="slider-header badge-1">
+                    <span>Massa Bola 1 (m₁)</span>
+                    <span id="val-m1">2 kg</span>
+                </div>
+                <input type="range" id="m1" min="1" max="5" step="0.5" value="2" oninput="updateParams()">
+            </div>
+            <div class="slider-group">
+                <div class="slider-header badge-1">
+                    <span>Kecepatan Awal 1 (v₁)</span>
+                    <span id="val-v1">3 m/s</span>
+                </div>
+                <input type="range" id="v1" min="-5" max="5" step="1" value="3" oninput="updateParams()">
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="slider-group">
+                <div class="slider-header badge-2">
+                    <span>Massa Bola 2 (m₂)</span>
+                    <span id="val-m2">2 kg</span>
+                </div>
+                <input type="range" id="m2" min="1" max="5" step="0.5" value="2" oninput="updateParams()">
+            </div>
+            <div class="slider-group">
+                <div class="slider-header badge-2">
+                    <span>Kecepatan Awal 2 (v₂)</span>
+                    <span id="val-v2">-2 m/s</span>
+                </div>
+                <input type="range" id="v2" min="-5" max="5" step="1" value="-2" oninput="updateParams()">
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="slider-group">
+                <div class="slider-header">
+                    <span>Koef. Restitusi (e)</span>
+                    <span id="val-e">1 (Lenting Sempurna)</span>
+                </div>
+                <input type="range" id="e" min="0" max="1" step="0.1" value="1" oninput="updateParams()">
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let isRunning = true;
+        let animationId;
+        
+        // Objek Bola
+        let ball1 = { x: 150, y: 125, m: 2, v: 3, color: '#15b5b0', r: 25 };
+        let ball2 = { x: 650, y: 125, m: 2, v: -2, color: '#f9aab4', r: 25 };
+        let e = 1; // Koefisien restitusi
+
+        function getRadius(mass) {
+            return 15 + (mass * 5); // Skala radius berdasarkan massa
+        }
+
+        function updateParams() {
+            // Ambil nilai dari slider
+            ball1.m = parseFloat(document.getElementById('m1').value);
+            ball1.v = parseFloat(document.getElementById('v1').value);
+            ball2.m = parseFloat(document.getElementById('m2').value);
+            ball2.v = parseFloat(document.getElementById('v2').value);
+            e = parseFloat(document.getElementById('e').value);
+
+            // Update teks label
+            document.getElementById('val-m1').innerText = ball1.m + ' kg';
+            document.getElementById('val-v1').innerText = ball1.v + ' m/s';
+            document.getElementById('val-m2').innerText = ball2.m + ' kg';
+            document.getElementById('val-v2').innerText = ball2.v + ' m/s';
+            
+            let eText = e === 1 ? ' (Lenting Sempurna)' : e === 0 ? ' (Tidak Lenting)' : ' (Lenting Sebagian)';
+            document.getElementById('val-e').innerText = e + eText;
+
+            // Reset posisi saat parameter diubah
+            resetSim(false); 
+        }
+
+        function toggleSim() {
+            isRunning = !isRunning;
+            document.getElementById('statusTxt').innerText = isRunning ? "Berjalan" : "Jeda";
+            document.getElementById('statusTxt').style.color = isRunning ? "var(--primary)" : "var(--accent)";
+        }
+
+        function resetSim(fullReset = true) {
+            ball1.x = 150;
+            ball2.x = 650;
+            if(fullReset) {
+                updateParams(); 
+            }
+            ball1.r = getRadius(ball1.m);
+            ball2.r = getRadius(ball2.m);
+            draw();
+        }
+
+        function drawBall(ball) {
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+            ctx.fillStyle = ball.color;
+            ctx.fill();
+            ctx.closePath();
+
+            // Tulis Kecepatan di dalam bola
+            ctx.fillStyle = "white";
+            ctx.font = "600 12px Poppins";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(ball.v.toFixed(1) + " m/s", ball.x, ball.y);
+        }
+
+        function draw() {
+            // Hapus layar
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Gambar lintasan
+            ctx.beginPath();
+            ctx.moveTo(0, 150);
+            ctx.lineTo(canvas.width, 150);
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            if (isRunning) {
+                // Update posisi (dikali faktor agar tidak terlalu cepat)
+                ball1.x += ball1.v * 1.5; 
+                ball2.x += ball2.v * 1.5;
+
+                // Deteksi Tumbukan antar bola
+                if (Math.abs(ball1.x - ball2.x) <= (ball1.r + ball2.r)) {
+                    // Simpan kecepatan awal
+                    let u1 = ball1.v;
+                    let u2 = ball2.v;
+                    let m1 = ball1.m;
+                    let m2 = ball2.m;
+
+                    // Rumus Tumbukan 1D dengan Koefisien Restitusi
+                    let v1_final = ((m1 * u1) + (m2 * u2) + m2 * e * (u2 - u1)) / (m1 + m2);
+                    let v2_final = ((m1 * u1) + (m2 * u2) + m1 * e * (u1 - u2)) / (m1 + m2);
+
+                    ball1.v = v1_final;
+                    ball2.v = v2_final;
+
+                    // Koreksi posisi agar tidak saling menempel/tembus
+                    let overlap = (ball1.r + ball2.r) - Math.abs(ball1.x - ball2.x);
+                    if (ball1.x < ball2.x) {
+                        ball1.x -= overlap / 2;
+                        ball2.x += overlap / 2;
+                    } else {
+                        ball1.x += overlap / 2;
+                        ball2.x -= overlap / 2;
+                    }
+                }
+
+                // Pantulan dinding batas layar
+                if (ball1.x - ball1.r <= 0) { ball1.x = ball1.r; ball1.v *= -1; }
+                if (ball1.x + ball1.r >= canvas.width) { ball1.x = canvas.width - ball1.r; ball1.v *= -1; }
+                if (ball2.x - ball2.r <= 0) { ball2.x = ball2.r; ball2.v *= -1; }
+                if (ball2.x + ball2.r >= canvas.width) { ball2.x = canvas.width - ball2.r; ball2.v *= -1; }
+            }
+
+            // Hitung dan tampilkan total momentum P = m1*v1 + m2*v2
+            let totalMomentum = (ball1.m * ball1.v) + (ball2.m * ball2.v);
+            document.getElementById('totalP').innerText = totalMomentum.toFixed(2) + " kg m/s";
+
+            // Render objek
+            drawBall(ball1);
+            drawBall(ball2);
+
+            animationId = requestAnimationFrame(draw);
+        }
+
+        // Inisialisasi
+        resetSim(true);
+    </script>
+</body>
+</html>
