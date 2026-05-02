@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Struktur Atom - PhysLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --card-bg: #fafafa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Navigasi */
+        nav {
+            padding: 1.2rem 8%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 10px;
+            background: #f8f8f8;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            color: var(--primary);
+            background: #f0fdfc;
+        }
+
+        .module-title {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        /* Container Utama */
+        .container {
+            padding: 40px 8%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-text {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header-text h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        /* Layout Simulator */
+        .simulator-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid #eee;
+            margin-bottom: 50px;
+        }
+
+        /* Panel Kontrol */
+        .control-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-box {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+            text-align: center;
+        }
+
+        .element-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .element-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .control-group {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+        }
+
+        .particle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .particle-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .particle-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .btn-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-group button {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            border: none;
+            background: #f0f0f0;
+            color: var(--text);
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-group button:hover {
+            background: var(--secondary);
+        }
+
+        .count-display {
+            width: 20px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        /* Canvas Area */
+        .canvas-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-height: 400px;
+        }
+
+        canvas {
+            max-width: 100%;
+        }
+
+        /* Kuis Section */
+        .quiz-section {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            border: 1px solid #eee;
+        }
+
+        .quiz-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            color: var(--primary);
+        }
+
+        .question {
+            margin-bottom: 25px;
+        }
+
+        .question p {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--card-bg);
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .option-label:hover {
+            background: #f0fdfc;
+            border-color: var(--primary);
+        }
+
+        input[type="radio"] {
+            accent-color: var(--primary);
+        }
+
+        .submit-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background: #119994;
+            transform: translateY(-2px);
+        }
+
+        #quiz-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .correct-bg { background: #e6fcf5; color: #0ca678; border: 1px solid #c3fae8; }
+        .wrong-bg { background: #fff5f5; color: #e03131; border: 1px solid #ffe3e3; }
+
+        @media (max-width: 768px) {
+            .simulator-layout { grid-template-columns: 1fr; }
+            nav { padding: 1rem 5%; }
+            .container { padding: 30px 5%; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-left">
+            <a href="index.html" class="back-btn">
+                <i data-lucide="arrow-left" style="width: 18px;"></i> Kembali
+            </a>
+            <span class="module-title">Struktur Atom</span>
+        </div>
+        <div class="nav-right">
+            <i data-lucide="orbit" style="color: var(--primary);"></i>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header-text">
+            <h1>Eksplorasi Struktur Atom</h1>
+            <p style="color: var(--text-light);">Bangun atom Anda sendiri! Tambahkan proton, neutron, dan elektron untuk melihat perubahannya.</p>
+        </div>
+
+        <div class="simulator-layout">
+            <div class="control-panel">
+                <div class="info-box">
+                    <div class="element-name" id="el-name">Hidrogen</div>
+                    <div class="element-stats">
+                        <span id="el-mass"><i data-lucide="weight" style="width:16px; display:inline; vertical-align:middle;"></i> Massa: 1</span>
+                        <span id="el-charge"><i data-lucide="zap" style="width:16px; display:inline; vertical-align:middle;"></i> Muatan: 0</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="particle-row">
+                        <div class="particle-label" style="color: var(--primary);">
+                            <i data-lucide="circle-dot"></i> Proton (p+)
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="changeParticle('p', -1)"><i data-lucide="minus" style="width:16px;"></i></button>
+                            <span class="count-display" id="count-p">1</span>
+                            <button onclick="changeParticle('p', 1)"><i data-lucide="plus" style="width:16px;"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="particle-row">
+                        <div class="particle-label" style="color: var(--secondary);">
+                            <i data-lucide="circle"></i> Neutron (n0)
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="changeParticle('n', -1)"><i data-lucide="minus" style="width:16px;"></i></button>
+                            <span class="count-display" id="count-n">0</span>
+                            <button onclick="changeParticle('n', 1)"><i data-lucide="plus" style="width:16px;"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="particle-row">
+                        <div class="particle-label" style="color: var(--accent);">
+                            <i data-lucide="sparkles"></i> Elektron (e-)
+                        </div>
+                        <div class="btn-group">
+                            <button onclick="changeParticle('e', -1)"><i data-lucide="minus" style="width:16px;"></i></button>
+                            <span class="count-display" id="count-e">1</span>
+                            <button onclick="changeParticle('e', 1)"><i data-lucide="plus" style="width:16px;"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="atomCanvas" width="400" height="400"></canvas>
+            </div>
+        </div>
+
+        <div class="quiz-section">
+            <h2 class="quiz-title"><i data-lucide="clipboard-check"></i> Uji Pemahamanmu</h2>
+            
+            <form id="quiz-form">
+                <div class="question">
+                    <p>1. Partikel apa yang menentukan identitas (nama) suatu unsur?</p>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q1" value="a"> Proton</label>
+                        <label class="option-label"><input type="radio" name="q1" value="b"> Neutron</label>
+                        <label class="option-label"><input type="radio" name="q1" value="c"> Elektron</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p>2. Jika sebuah atom Karbon (6 Proton) memiliki 7 Elektron, bagaimana status muatannya?</p>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q2" value="a"> Netral</label>
+                        <label class="option-label"><input type="radio" name="q2" value="b"> Ion Positif (+1)</label>
+                        <label class="option-label"><input type="radio" name="q2" value="c"> Ion Negatif (-1)</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p>3. Di manakah letak elektron di dalam sebuah atom?</p>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q3" value="a"> Di dalam inti atom (Nukleus)</label>
+                        <label class="option-label"><input type="radio" name="q3" value="b"> Mengorbit di lintasan luar inti</label>
+                        <label class="option-label"><input type="radio" name="q3" value="c"> Bercampur dengan proton</label>
+                    </div>
+                </div>
+
+                <button type="button" class="submit-btn" onclick="checkQuiz()">Cek Jawaban <i data-lucide="check-circle" style="width: 18px;"></i></button>
+                <div id="quiz-result"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // SIMULATOR ATOM LOGIC
+        let particles = { p: 1, n: 0, e: 1 };
+        const elements = [
+            "Tidak Ada", "Hidrogen (H)", "Helium (He)", "Litium (Li)", "Berilium (Be)", 
+            "Boron (B)", "Karbon (C)", "Nitrogen (N)", "Oksigen (O)", "Fluorin (F)", "Neon (Ne)"
+        ];
+
+        const canvas = document.getElementById('atomCanvas');
+        const ctx = canvas.getContext('2d');
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+
+        function changeParticle(type, amount) {
+            particles[type] += amount;
+            if (particles[type] < 0) particles[type] = 0;
+            // Batasi proton sampai Neon (Z=10) untuk kemudahan visualisasi
+            if (type === 'p' && particles[type] > 10) particles[type] = 10;
+            if (type === 'e' && particles[type] > 10) particles[type] = 10;
+            if (type === 'n' && particles[type] > 12) particles[type] = 12;
+            
+            updateUI();
+            drawAtom();
+        }
+
+        function updateUI() {
+            document.getElementById('count-p').innerText = particles.p;
+            document.getElementById('count-n').innerText = particles.n;
+            document.getElementById('count-e').innerText = particles.e;
+
+            document.getElementById('el-name').innerText = elements[particles.p];
+            
+            let mass = particles.p + particles.n;
+            let charge = particles.p - particles.e;
+            let chargeStr = charge === 0 ? "Netral" : (charge > 0 ? `+${charge}` : charge);
+
+            document.getElementById('el-mass').innerHTML = `<i data-lucide="weight" style="width:16px; display:inline; vertical-align:middle; margin-right:4px;"></i> Massa: ${mass}`;
+            document.getElementById('el-charge').innerHTML = `<i data-lucide="zap" style="width:16px; display:inline; vertical-align:middle; margin-right:4px;"></i> Muatan: ${chargeStr}`;
+            lucide.createIcons();
+        }
+
+        function drawAtom() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Gambar Kulit Elektron (Shells)
+            const shellRadii = [60, 110, 160];
+            const maxElectronsPerShell = [2, 8, 8];
+            let remainingElectrons = particles.e;
+
+            for (let i = 0; i < shellRadii.length; i++) {
+                if (remainingElectrons <= 0 && i > 0) break; 
+                
+                // Gambar garis orbit
+                ctx.beginPath();
+                ctx.arc(cx, cy, shellRadii[i], 0, 2 * Math.PI);
+                ctx.strokeStyle = '#e0e0e0';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Gambar elektron pada orbit ini
+                let electronsInThisShell = Math.min(remainingElectrons, maxElectronsPerShell[i]);
+                for (let j = 0; j < electronsInThisShell; j++) {
+                    let angle = (j / electronsInThisShell) * 2 * Math.PI;
+                    let ex = cx + shellRadii[i] * Math.cos(angle);
+                    let ey = cy + shellRadii[i] * Math.sin(angle);
+
+                    ctx.beginPath();
+                    ctx.arc(ex, ey, 6, 0, 2 * Math.PI);
+                    ctx.fillStyle = '#f9aab4'; // Accent pink
+                    ctx.fill();
+                }
+                remainingElectrons -= electronsInThisShell;
+            }
+
+            // Gambar Inti Atom (Nucleus) - Sebaran acak namun terpusat
+            let nucleusRadius = 20;
+            // Gambar background inti tipis
+            ctx.beginPath();
+            ctx.arc(cx, cy, nucleusRadius + 5, 0, 2 * Math.PI);
+            ctx.fillStyle = 'rgba(240,240,240,0.5)';
+            ctx.fill();
+
+            // Fungsi utilitas menggambar partikel inti
+            const drawNucleon = (color, offsetR, offsetAngle) => {
+                let px = cx + offsetR * Math.cos(offsetAngle);
+                let py = cy + offsetR * Math.sin(offsetAngle);
+                ctx.beginPath();
+                ctx.arc(px, py, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = color;
+                ctx.fill();
+            };
+
+            // Menggambar proton dan neutron
+            let totalNucleons = particles.p + particles.n;
+            let currentP = 0;
+            let currentN = 0;
+
+            for (let i = 0; i < totalNucleons; i++) {
+                // Distibusi spiral simpel
+                let radius = (i / totalNucleons) * nucleusRadius;
+                let angle = i * 2.4; // Golden angle approx
+                
+                if (currentP < particles.p && (i % 2 === 0 || currentN >= particles.n)) {
+                    drawNucleon('#15b5b0', radius, angle); // Primary Teal for Proton
+                    currentP++;
+                } else if (currentN < particles.n) {
+                    drawNucleon('#f9da82', radius, angle); // Secondary Yellow for Neutron
+                    currentN++;
+                }
+            }
+        }
+
+        // KUIS LOGIC
+        function checkQuiz() {
+            const form = document.getElementById('quiz-form');
+            const q1 = form.elements['q1'].value;
+            const q2 = form.elements['q2'].value;
+            const q3 = form.elements['q3'].value;
+            const resultBox = document.getElementById('quiz-result');
+
+            if (!q1 || !q2 || !q3) {
+                resultBox.className = 'wrong-bg';
+                resultBox.innerHTML = 'Harap jawab semua pertanyaan terlebih dahulu ya!';
+                resultBox.style.display = 'block';
+                return;
+            }
+
+            let score = 0;
+            if (q1 === 'a') score++;
+            if (q2 === 'c') score++;
+            if (q3 === 'b') score++;
+
+            if (score === 3) {
+                resultBox.className = 'correct-bg';
+                resultBox.innerHTML = '<i data-lucide="party-popper" style="display:inline; vertical-align:middle; width:20px;"></i> Luar biasa! Semua jawabanmu benar. Kamu sudah memahami dasar struktur atom.';
+            } else {
+                resultBox.className = 'wrong-bg';
+                resultBox.innerHTML = `Kamu menjawab ${score} dari 3 pertanyaan dengan benar. Yuk pelajari lagi simulator di atas dan coba lagi!`;
+            }
+            lucide.createIcons();
+            resultBox.style.display = 'block';
+        }
+
+        // Inisialisasi awal
+        updateUI();
+        drawAtom();
+    </script>
+</body>
+</html>

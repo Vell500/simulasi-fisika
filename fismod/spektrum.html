@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Spektrum Cahaya - PhysLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --card-bg: #fafafa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            padding: 1.2rem 8%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 10px;
+            background: #f8f8f8;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            color: var(--primary);
+            background: #f0fdfc;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 40px 8% 20px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px 8% 60px;
+        }
+
+        /* Simulation Section */
+        .simulation-card {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        }
+
+        .sim-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .element-btn {
+            padding: 10px 20px;
+            border: 2px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .element-btn.active, .element-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Spectrum Display */
+        .spectrum-container {
+            background: #111;
+            height: 150px;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid #333;
+            margin-bottom: 15px;
+        }
+
+        .spectrum-scale {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-light);
+            font-size: 0.8rem;
+            padding: 0 10px;
+            font-weight: 600;
+        }
+
+        .spectral-line {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            box-shadow: 0 0 10px currentColor;
+            opacity: 0.9;
+        }
+
+        .spectrum-continuous {
+            background: linear-gradient(to right, 
+                #111 0%, 
+                #8a2be2 10%, #4b0082 20%, #0000ff 35%, 
+                #00ff00 55%, #ffff00 70%, #ff7f00 85%, #ff0000 95%, 
+                #111 100%);
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        /* Quiz Section */
+        .quiz-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid #eee;
+        }
+
+        .quiz-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            color: var(--primary);
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .option-label:hover {
+            border-color: var(--secondary);
+            background: #fdfaf0;
+        }
+
+        input[type="radio"] {
+            accent-color: var(--primary);
+            width: 18px;
+            height: 18px;
+        }
+
+        .submit-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .submit-btn:hover {
+            background: #119692;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(21, 181, 176, 0.2);
+        }
+
+        #quiz-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+        }
+
+        .correct-bg { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .wrong-bg { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="back-btn">
+            <i data-lucide="arrow-left"></i> Kembali
+        </a>
+        <div style="color: var(--primary);"><i data-lucide="bar-chart-3"></i></div>
+    </nav>
+
+    <header>
+        <h1>Spektrum Cahaya</h1>
+        <p>Setiap unsur kimia memiliki "sidik jari" spektrum emisi yang unik. Gunakan simulasi di bawah untuk melihat perbedaan spektrum pancaran dari berbagai unsur.</p>
+    </header>
+
+    <div class="container">
+        <div class="simulation-card">
+            <div class="sim-controls" id="controls">
+                <button class="element-btn active" data-element="continuous"><i data-lucide="sun"></i> Cahaya Putih (Kontinu)</button>
+                <button class="element-btn" data-element="hydrogen"><i data-lucide="atom"></i> Hidrogen (H)</button>
+                <button class="element-btn" data-element="helium"><i data-lucide="cloud"></i> Helium (He)</button>
+                <button class="element-btn" data-element="neon"><i data-lucide="zap"></i> Neon (Ne)</button>
+            </div>
+
+            <div class="spectrum-container" id="spectrum-display">
+                <div class="spectrum-continuous" id="continuous-bg"></div>
+                </div>
+            
+            <div class="spectrum-scale">
+                <span>400 nm (Ungu)</span>
+                <span>Panjang Gelombang (nm)</span>
+                <span>700 nm (Merah)</span>
+            </div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="quiz-header">
+                <i data-lucide="brain-circuit"></i>
+                <h2>Uji Pemahaman</h2>
+            </div>
+            
+            <form id="quiz-form">
+                <div class="question-block">
+                    <div class="question-text">1. Apa yang menyebabkan terbentuknya garis spektrum emisi pada suatu unsur?</div>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q1" value="a"> A. Elektron berpindah dari tingkat energi rendah ke tinggi.</label>
+                        <label class="option-label"><input type="radio" name="q1" value="b"> B. Elektron berpindah dari tingkat energi tinggi ke rendah dengan memancarkan foton.</label>
+                        <label class="option-label"><input type="radio" name="q1" value="c"> C. Proton bertumbukan di dalam inti atom.</label>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">2. Cahaya matahari atau lampu pijar jika dilewatkan pada prisma akan menghasilkan...</div>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q2" value="a"> A. Spektrum kontinu (berkelanjutan).</label>
+                        <label class="option-label"><input type="radio" name="q2" value="b"> B. Spektrum garis serapan (gelap).</label>
+                        <label class="option-label"><input type="radio" name="q2" value="c"> C. Spektrum garis emisi (terang pada latar gelap).</label>
+                    </div>
+                </div>
+
+                <div class="question-block">
+                    <div class="question-text">3. Mengapa setiap unsur memiliki spektrum emisi yang berbeda-beda (seperti sidik jari)?</div>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q3" value="a"> A. Karena setiap unsur memiliki massa yang berbeda.</label>
+                        <label class="option-label"><input type="radio" name="q3" value="b"> B. Karena kecepatan cahaya berubah di dalam unsur yang berbeda.</label>
+                        <label class="option-label"><input type="radio" name="q3" value="c"> C. Karena setiap unsur memiliki susunan tingkat energi elektron yang unik.</label>
+                    </div>
+                </div>
+
+                <button type="button" class="submit-btn" onclick="checkQuiz()">
+                    <i data-lucide="check-circle"></i> Kumpulkan Jawaban
+                </button>
+                <div id="quiz-result"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Data Spektrum (Panjang Gelombang dalam nm & Warna)
+        // Rentang simulasi visual diset dari 400nm sampai 700nm (Visualisasi rentang 300nm)
+        const spectralData = {
+            hydrogen: [
+                { nm: 410, color: '#8a2be2' }, // Violet
+                { nm: 434, color: '#0000ff' }, // Blue
+                { nm: 486, color: '#00ffff' }, // Cyan
+                { nm: 656, color: '#ff0000' }  // Red
+            ],
+            helium: [
+                { nm: 447, color: '#0000ff' },
+                { nm: 471, color: '#0088ff' },
+                { nm: 492, color: '#00ffff' },
+                { nm: 501, color: '#00ff88' },
+                { nm: 587, color: '#ffff00' }, // Kuning pekat
+                { nm: 667, color: '#ff0000' }
+            ],
+            neon: [
+                { nm: 540, color: '#00ff00' },
+                { nm: 585, color: '#ffff00' },
+                { nm: 588, color: '#ffaa00' },
+                { nm: 603, color: '#ff7700' },
+                { nm: 614, color: '#ff4400' },
+                { nm: 640, color: '#ff0000' },
+                { nm: 650, color: '#cc0000' },
+                { nm: 692, color: '#880000' }
+            ]
+        };
+
+        const displayArea = document.getElementById('spectrum-display');
+        const continuousBg = document.getElementById('continuous-bg');
+        const buttons = document.querySelectorAll('.element-btn');
+
+        // Fungsi Render Spektrum
+        function renderSpectrum(elementName) {
+            // Hapus garis lama
+            document.querySelectorAll('.spectral-line').forEach(el => el.remove());
+
+            if (elementName === 'continuous') {
+                continuousBg.style.opacity = '1';
+                return;
+            } else {
+                continuousBg.style.opacity = '0';
+            }
+
+            const lines = spectralData[elementName];
+            if (!lines) return;
+
+            lines.forEach(line => {
+                // Konversi nm ke persentase posisi kiri (asumsi rentang 400 - 700 nm)
+                let positionPercentage = ((line.nm - 400) / 300) * 100;
+                
+                // Cegah overflow
+                if(positionPercentage < 0) positionPercentage = 0;
+                if(positionPercentage > 100) positionPercentage = 100;
+
+                const lineDiv = document.createElement('div');
+                lineDiv.classList.add('spectral-line');
+                lineDiv.style.left = `${positionPercentage}%`;
+                lineDiv.style.backgroundColor = line.color;
+                lineDiv.style.color = line.color; // untuk shadow
+                
+                displayArea.appendChild(lineDiv);
+            });
+        }
+
+        // Event Listener untuk Tombol Simulasi
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderSpectrum(btn.dataset.element);
+            });
+        });
+
+        // Tampilkan Spektrum Kontinu saat pertama kali dimuat
+        renderSpectrum('continuous');
+
+        // Fungsi Validasi Kuis
+        function checkQuiz() {
+            const answers = { q1: 'b', q2: 'a', q3: 'c' };
+            let score = 0;
+            const form = document.getElementById('quiz-form');
+            const resultBox = document.getElementById('quiz-result');
+
+            let allAnswered = true;
+
+            for (let key in answers) {
+                const selected = form.querySelector(`input[name="${key}"]:checked`);
+                if (!selected) {
+                    allAnswered = false;
+                } else if (selected.value === answers[key]) {
+                    score++;
+                }
+            }
+
+            resultBox.style.display = 'block';
+            
+            if (!allAnswered) {
+                resultBox.className = 'wrong-bg';
+                resultBox.innerHTML = '<i data-lucide="alert-circle" style="display:inline-block; vertical-align:middle; margin-right:5px;"></i> Silakan jawab semua pertanyaan terlebih dahulu.';
+            } else {
+                if (score === 3) {
+                    resultBox.className = 'correct-bg';
+                    resultBox.innerHTML = `<i data-lucide="check-circle" style="display:inline-block; vertical-align:middle; margin-right:5px;"></i> Luar biasa! Skor Anda 100. Anda memahami materi ini dengan baik.`;
+                } else {
+                    resultBox.className = 'wrong-bg';
+                    resultBox.innerHTML = `Skor Anda: ${Math.round((score/3)*100)}. Coba pelajari lagi konsep emisi elektron dan tingkat energi.`;
+                }
+            }
+            lucide.createIcons(); // Re-render icon dalam result box
+        }
+    </script>
+</body>
+</html>

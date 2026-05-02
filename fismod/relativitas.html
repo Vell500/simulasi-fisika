@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relativitas: Dilatasi Waktu - PhysLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); line-height: 1.6; }
+
+        nav {
+            padding: 1rem 8%;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .back-link { text-decoration: none; color: var(--text); display: flex; align-items: center; gap: 5px; font-weight: 500; }
+
+        header { padding: 40px 8%; text-align: center; }
+        header h1 { color: var(--text); font-size: 2.2rem; }
+
+        .container { padding: 0 8% 60px; max-width: 1200px; margin: 0 auto; }
+
+        /* Simulation Box */
+        .sim-wrapper {
+            background: #fdfdfd;
+            border: 2px solid #f0f0f0;
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 40px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+        }
+
+        canvas {
+            width: 100%;
+            background: #0a0e14;
+            border-radius: 15px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #eee;
+        }
+
+        .control-group label { font-weight: 600; display: block; margin-bottom: 10px; font-size: 0.9rem; }
+        
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+
+        .stats {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px dashed #ddd;
+        }
+
+        .stat-item { margin-bottom: 15px; }
+        .stat-val { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+
+        /* Quiz Section */
+        .quiz-section { background: #f0fdfc; padding: 40px; border-radius: 24px; }
+        .quiz-card { background: white; padding: 25px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .options { margin-top: 15px; display: grid; gap: 10px; }
+        .opt-btn {
+            padding: 12px 20px;
+            border: 1.5px solid #eee;
+            border-radius: 10px;
+            background: none;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.3s;
+            color: var(--text);
+        }
+        .opt-btn:hover { border-color: var(--primary); background: #f0fdfc; }
+        .correct { background: #d1fae5 !important; border-color: #10b981 !important; color: #065f46; }
+
+        @media (max-width: 900px) {
+            .sim-wrapper { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="back-link"><i data-lucide="chevron-left"></i> Kembali ke Fisika Modern</a>
+    </nav>
+
+    <header>
+        <h1>Simulasi Dilatasi Waktu</h1>
+        <p>Lihat bagaimana waktu melambat bagi astronot saat kecepatan pesawat mendekati kecepatan cahaya (c).</p>
+    </header>
+
+    <div class="container">
+        <div class="sim-wrapper">
+            <canvas id="simCanvas" width="600" height="350"></canvas>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label><i data-lucide="gauge"></i> Kecepatan Pesawat (v)</label>
+                    <input type="range" id="speedRange" min="0" max="0.99" step="0.01" value="0.5">
+                    <div style="text-align: right; font-weight: 600;" id="speedVal">0.50c</div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-item">
+                        <label>Waktu Bumi (t)</label>
+                        <div class="stat-val" id="earthTime">0.00 s</div>
+                    </div>
+                    <div class="stat-item">
+                        <label>Waktu Pesawat (t')</label>
+                        <div class="stat-val" id="shipTime">0.00 s</div>
+                    </div>
+                    <div class="stat-item">
+                        <label>Faktor Lorentz (gamma)</label>
+                        <div class="stat-val" id="gammaVal">1.15</div>
+                    </div>
+                </div>
+                <button id="resetBtn" style="padding: 10px; border: none; background: var(--accent); color: white; border-radius: 8px; cursor: pointer; font-weight: 600;">Reset Simulasi</button>
+            </div>
+        </div>
+
+        <section class="quiz-section">
+            <h2 style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                <i data-lucide="help-circle" style="color: var(--primary);"></i> Uji Pemahamanmu
+            </h2>
+
+            <div class="quiz-card" data-ans="1">
+                <p>1. Apa yang terjadi pada waktu di dalam pesawat jika kecepatannya mendekati kecepatan cahaya menurut pengamat di Bumi?</p>
+                <div class="options">
+                    <button class="opt-btn" onclick="checkAns(this, 0)">Waktu berjalan lebih cepat</button>
+                    <button class="opt-btn" onclick="checkAns(this, 1)">Waktu berjalan lebih lambat (Dilatasi)</button>
+                    <button class="opt-btn" onclick="checkAns(this, 0)">Waktu berhenti total</button>
+                </div>
+            </div>
+
+            <div class="quiz-card" data-ans="2">
+                <p>2. Jika faktor Lorentz (gamma) bernilai 2, dan 10 tahun berlalu di Bumi, berapa lama waktu yang dirasakan astronot?</p>
+                <div class="options">
+                    <button class="opt-btn" onclick="checkAns(this, 0)">20 Tahun</button>
+                    <button class="opt-btn" onclick="checkAns(this, 0)">10 Tahun</button>
+                    <button class="opt-btn" onclick="checkAns(this, 2)">5 Tahun</button>
+                </div>
+            </div>
+
+            <div class="quiz-card" data-ans="0">
+                <p>3. Siapa ilmuwan yang merumuskan Teori Relativitas Khusus?</p>
+                <div class="options">
+                    <button class="opt-btn" onclick="checkAns(this, 0)">Albert Einstein</button>
+                    <button class="opt-btn" onclick="checkAns(this, 1)">Isaac Newton</button>
+                    <button class="opt-btn" onclick="checkAns(this, 2)">Niels Bohr</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        const speedRange = document.getElementById('speedRange');
+        const speedValDisp = document.getElementById('speedVal');
+        const earthTimeDisp = document.getElementById('earthTime');
+        const shipTimeDisp = document.getElementById('shipTime');
+        const gammaDisp = document.getElementById('gammaVal');
+        const resetBtn = document.getElementById('resetBtn');
+
+        let earthTime = 0;
+        let shipTime = 0;
+        let v = 0.5;
+        let animationId;
+
+        function updateSim() {
+            v = parseFloat(speedRange.value);
+            speedValDisp.innerText = v.toFixed(2) + 'c';
+            
+            // Lorentz Factor: gamma = 1 / sqrt(1 - v^2/c^2)
+            let gamma = 1 / Math.sqrt(1 - Math.pow(v, 2));
+            gammaDisp.innerText = gamma.toFixed(2);
+
+            earthTime += 0.016; // increment based on ~60fps
+            shipTime = earthTime / gamma;
+
+            earthTimeDisp.innerText = earthTime.toFixed(2) + ' s';
+            shipTimeDisp.innerText = shipTime.toFixed(2) + ' s';
+
+            draw();
+            animationId = requestAnimationFrame(updateSim);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Stars background
+            ctx.fillStyle = "white";
+            for(let i=0; i<20; i++) {
+                ctx.beginPath();
+                ctx.arc((Math.random() * canvas.width), (Math.random() * canvas.height), 1, 0, Math.PI*2);
+                ctx.fill();
+            }
+
+            // Draw Earth
+            ctx.beginPath();
+            ctx.arc(100, 175, 40, 0, Math.PI*2);
+            ctx.fillStyle = "#15b5b0";
+            ctx.fill();
+            ctx.fillStyle = "white";
+            ctx.fillText("BUMI", 85, 230);
+
+            // Draw Ship
+            let shipX = 200 + ( (earthTime * 50) % 350 );
+            ctx.fillStyle = "#f9da82";
+            ctx.fillRect(shipX, 160, 60, 30);
+            ctx.beginPath();
+            ctx.moveTo(shipX + 60, 160);
+            ctx.lineTo(shipX + 80, 175);
+            ctx.lineTo(shipX + 60, 190);
+            ctx.fill();
+            
+            ctx.fillStyle = "white";
+            ctx.font = "12px Poppins";
+            ctx.fillText("PESAWAT (v)", shipX, 150);
+        }
+
+        resetBtn.onclick = () => {
+            earthTime = 0;
+            shipTime = 0;
+        };
+
+        function checkAns(btn, idx) {
+            const card = btn.closest('.quiz-card');
+            const correctIdx = parseInt(card.getAttribute('data-ans'));
+            const options = card.querySelectorAll('.opt-btn');
+            
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+            
+            if(idx === correctIdx) {
+                btn.classList.add('correct');
+            } else {
+                btn.style.backgroundColor = '#f9aab4';
+                options[correctIdx].classList.add('correct');
+            }
+        }
+
+        updateSim();
+    </script>
+</body>
+</html>
