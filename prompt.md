@@ -15,12 +15,12 @@ Aturan font: Full Poppins
 
 # Prompt 2
 
-Masuk ke dalam cahaya/index.html, buatlah navigasi untuk:
-1. Efek fotolistrik (fotolistrik.html)
-2. Radioaktivitas (radio.html)
-3. Struktur atom (atom.html)
-4. Percobaan spektrum cahaya (spektrum.html)
-5. Relativitas (relativitas.html)
+Masuk ke dalam gelombang/index.html, buatlah navigasi untuk:
+1. Gelombang transversal & longitudinal
+2. Frekuensi & panjang gelombang
+3. Resonansi bunyi
+4. Percobaan tali bergetar
+5. Tabung resonansi
 
 HANYA menggunakan HTML, CSS, dan Javascript. Pastikan website ini terlihat profesional. Gunakan ikon, bukan emoji.
 
