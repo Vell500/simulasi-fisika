@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fisika Modern - PhysLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --card-bg: #fafafa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Navigation & Breadcrumbs */
+        nav {
+            padding: 1.2rem 8%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 8px 15px;
+            border-radius: 10px;
+            background: #f8f8f8;
+        }
+
+        .back-btn:hover {
+            color: var(--primary);
+            background: #f0fdfc;
+        }
+
+        .module-title {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.2rem;
+            letter-spacing: -0.5px;
+        }
+
+        /* Header Section */
+        header {
+            padding: 60px 8% 40px;
+            background: linear-gradient(to bottom, #f0fdfc 0%, #ffffff 100%);
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        header p {
+            color: var(--text-light);
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 1rem;
+        }
+
+        /* Content Grid */
+        .container {
+            padding: 40px 8% 80px;
+        }
+
+        .grid-topics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .topic-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 35px;
+            text-decoration: none;
+            border: 1px solid #eee;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .topic-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .topic-card:hover {
+            transform: translateY(-8px);
+            background: white;
+            box-shadow: 0 20px 40px rgba(122, 72, 80, 0.08);
+            border-color: transparent;
+        }
+
+        .topic-card:hover::after {
+            transform: scaleX(1);
+        }
+
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+            color: var(--primary);
+            transition: 0.3s;
+        }
+
+        .topic-card:hover .icon-circle {
+            background: var(--primary);
+            color: white;
+        }
+
+        .topic-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .topic-card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .learn-more {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Special Decoration for Modern Physics */
+        .decoration-atom {
+            position: fixed;
+            top: 20%;
+            right: -5%;
+            opacity: 0.03;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8rem; }
+            .grid-topics { grid-template-columns: 1fr; }
+            nav { padding: 1rem 5%; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-left">
+            <a href="../index.html" class="back-btn">
+                <i data-lucide="arrow-left" style="width: 18px;"></i> Kembali
+            </a>
+            <span class="module-title">Fisika Modern</span>
+        </div>
+        <div class="nav-right">
+            <i data-lucide="atom" style="color: var(--primary);"></i>
+        </div>
+    </nav>
+
+    <i data-lucide="atom" class="decoration-atom" style="width: 500px; height: 500px;"></i>
+
+    <header>
+        <h1>Modul Pembelajaran</h1>
+        <p>Menjelajahi fenomena fisika pada skala atomik dan subatomik serta memahami bagaimana ruang dan waktu bersifat relatif.</p>
+    </header>
+
+    <div class="container">
+        <div class="grid-topics">
+            <a href="fotolistrik.html" class="topic-card">
+                <div class="icon-circle"><i data-lucide="zap"></i></div>
+                <h3>Efek Fotolistrik</h3>
+                <p>Mempelajari pelepasan elektron dari permukaan logam saat disinari cahaya dan bukti sifat partikel cahaya.</p>
+                <div class="learn-more">Mulai Belajar <i data-lucide="chevron-right" style="width: 16px;"></i></div>
+            </a>
+
+            <a href="radio.html" class="topic-card">
+                <div class="icon-circle"><i data-lucide="radiation"></i></div>
+                <h3>Radioaktivitas</h3>
+                <p>Analisis peluruhan inti atom, sinar alfa, beta, gamma, serta waktu paruh unsur radioaktif.</p>
+                <div class="learn-more">Mulai Belajar <i data-lucide="chevron-right" style="width: 16px;"></i></div>
+            </a>
+
+            <a href="atom.html" class="topic-card">
+                <div class="icon-circle"><i data-lucide="orbit"></i></div>
+                <h3>Struktur Atom</h3>
+                <p>Evolusi model atom dari Dalton hingga mekanika kuantum dan tingkat energi elektron.</p>
+                <div class="learn-more">Mulai Belajar <i data-lucide="chevron-right" style="width: 16px;"></i></div>
+            </a>
+
+            <a href="spektrum.html" class="topic-card">
+                <div class="icon-circle"><i data-lucide="bar-chart-3"></i></div>
+                <h3>Spektrum Cahaya</h3>
+                <p>Percobaan spektrum garis pancaran dan serapan sebagai sidik jari unik setiap unsur kimia.</p>
+                <div class="learn-more">Mulai Belajar <i data-lucide="chevron-right" style="width: 16px;"></i></div>
+            </a>
+
+            <a href="relativitas.html" class="topic-card">
+                <div class="icon-circle"><i data-lucide="clock"></i></div>
+                <h3>Relativitas</h3>
+                <p>Memahami dilatasi waktu, kontraksi panjang, dan kesetaraan massa-energi E=mc² milik Einstein.</p>
+                <div class="learn-more">Mulai Belajar <i data-lucide="chevron-right" style="width: 16px;"></i></div>
+            </a>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 40px; border-top: 1px solid #eee; color: var(--text-light); font-size: 0.9rem;">
+        <p>&copy; 2026 PhysLearn - Modul Fisika Modern</p>
+    </footer>
+
+    <script>
+        // Inisialisasi Ikon Lucide
+        lucide.createIcons();
+
+        // Animasi halus saat scroll
+        document.querySelectorAll('.topic-card').forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease-out';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100 * index);
+        });
+    </script>
+</body>
+</html>

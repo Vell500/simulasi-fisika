@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Efek Fotolistrik - PhysLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --border: #f0f0f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            padding: 1.2rem 8%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: #f8f8f8;
+            padding: 8px 15px;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            color: var(--primary);
+            background: #f0fdfc;
+        }
+
+        .module-title {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        /* Layout & Containers */
+        .container {
+            padding: 40px 8%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .section-header p {
+            color: var(--text-light);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Simulation Area */
+        .sim-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .controls-panel {
+            background: #fafafa;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .slider {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text);
+            outline: none;
+        }
+
+        .status-box {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .status-row:last-child {
+            margin-bottom: 0;
+            padding-top: 8px;
+            border-top: 1px dashed #ccc;
+            font-weight: 600;
+        }
+
+        .canvas-container {
+            background: #1a1a1a;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 450px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* Quiz Section */
+        .quiz-section {
+            background: #fafafa;
+            padding: 50px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .quiz-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            color: var(--primary);
+        }
+
+        .question-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+
+        .options label {
+            display: block;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .options label:hover {
+            background: #f0fdfc;
+            border-color: var(--primary);
+        }
+
+        .options input[type="radio"] {
+            margin-right: 10px;
+            accent-color: var(--primary);
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .btn-submit:hover {
+            background: #129c97;
+            transform: translateY(-2px);
+        }
+
+        #quiz-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .result-success { background: #e0f8f7; color: var(--primary); }
+        .result-warning { background: #ffebee; color: var(--accent); }
+
+        @media (max-width: 900px) {
+            .sim-grid { grid-template-columns: 1fr; }
+            .canvas-container { min-height: 350px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-left">
+            <a href="index.html" class="back-btn">
+                <i data-lucide="arrow-left" style="width: 18px;"></i> Kembali
+            </a>
+            <span class="module-title">Efek Fotolistrik</span>
+        </div>
+        <i data-lucide="zap" style="color: var(--primary);"></i>
+    </nav>
+
+    <div class="container">
+        <div class="section-header">
+            <h1>Simulasi Interaktif</h1>
+            <p>Atur panjang gelombang dan intensitas cahaya yang menyinari plat logam. Amati kapan elektron mulai terlepas dari permukaan logam tersebut.</p>
+        </div>
+
+        <div class="sim-grid">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label>
+                        <span>Material Logam</span>
+                    </label>
+                    <select id="metal-select">
+                        <option value="2.3">Natrium (Na) - W₀ = 2.3 eV</option>
+                        <option value="4.1">Aluminium (Al) - W₀ = 4.1 eV</option>
+                        <option value="4.7" selected>Tembaga (Cu) - W₀ = 4.7 eV</option>
+                        <option value="5.1">Emas (Au) - W₀ = 5.1 eV</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        <span>Panjang Gelombang (λ)</span>
+                        <span id="lambda-val">400 nm</span>
+                    </label>
+                    <input type="range" id="lambda-slider" class="slider" min="150" max="750" value="400">
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        <span>Intensitas Cahaya</span>
+                        <span id="intensity-val">50%</span>
+                    </label>
+                    <input type="range" id="intensity-slider" class="slider" min="0" max="100" value="50">
+                </div>
+
+                <div class="status-box">
+                    <div class="status-row">
+                        <span>Energi Foton (E)</span>
+                        <span id="stat-e">0.00 eV</span>
+                    </div>
+                    <div class="status-row">
+                        <span>Fungsi Kerja (W₀)</span>
+                        <span id="stat-w">4.70 eV</span>
+                    </div>
+                    <div class="status-row" id="stat-result" style="color: var(--accent);">
+                        Tidak ada emisi elektron
+                    </div>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="simCanvas" width="800" height="450"></canvas>
+            </div>
+        </div>
+
+        <div class="quiz-section">
+            <div class="quiz-header">
+                <i data-lucide="clipboard-check" style="width: 28px; height: 28px;"></i>
+                <h2>Uji Pemahaman</h2>
+            </div>
+            
+            <form id="quizForm">
+                <div class="question-card">
+                    <p class="question-text">1. Menurut efek fotolistrik, apa yang terjadi jika intensitas cahaya ditingkatkan, tetapi frekuensi cahaya masih di bawah frekuensi ambang logam?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q1" value="A"> A. Elektron akan keluar dengan energi kinetik yang lebih besar</label>
+                        <label><input type="radio" name="q1" value="B"> B. Jumlah elektron yang keluar akan bertambah banyak</label>
+                        <label><input type="radio" name="q1" value="C"> C. Tidak ada elektron yang akan keluar dari logam</label>
+                        <label><input type="radio" name="q1" value="D"> D. Logam akan memanas dan meleleh</label>
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <p class="question-text">2. Faktor apakah yang secara langsung menentukan besarnya energi kinetik maksimum dari elektron yang terpental?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q2" value="A"> A. Hanya intensitas cahaya</label>
+                        <label><input type="radio" name="q2" value="B"> B. Frekuensi cahaya dan jenis logam</label>
+                        <label><input type="radio" name="q2" value="C"> C. Sudut datangnya cahaya</label>
+                        <label><input type="radio" name="q2" value="D"> D. Lama waktu penyinaran</label>
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <p class="question-text">3. Efek fotolistrik merupakan bukti eksperimental yang membuktikan bahwa cahaya memiliki sifat sebagai...</p>
+                    <div class="options">
+                        <label><input type="radio" name="q3" value="A"> A. Partikel (Foton)</label>
+                        <label><input type="radio" name="q3" value="B"> B. Gelombang elektromagnetik</label>
+                        <label><input type="radio" name="q3" value="C"> C. Gelombang mekanik</label>
+                        <label><input type="radio" name="q3" value="D"> D. Fluida</label>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-submit" onclick="checkQuiz()">
+                    <i data-lucide="check-circle" style="width: 18px;"></i> Kirim Jawaban
+                </button>
+                <div id="quiz-result"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // --- SIMULATION LOGIC ---
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // DOM Elements
+        const lambdaSlider = document.getElementById('lambda-slider');
+        const intensitySlider = document.getElementById('intensity-slider');
+        const metalSelect = document.getElementById('metal-select');
+        
+        const lambdaVal = document.getElementById('lambda-val');
+        const intensityVal = document.getElementById('intensity-val');
+        const statE = document.getElementById('stat-e');
+        const statW = document.getElementById('stat-w');
+        const statResult = document.getElementById('stat-result');
+
+        // Physics variables
+        let wavelength = parseInt(lambdaSlider.value); // nm
+        let intensity = parseInt(intensitySlider.value); // %
+        let workFunction = parseFloat(metalSelect.value); // eV
+        const hc = 1240; // eV*nm
+
+        // Particles
+        let photons = [];
+        let electrons = [];
+
+        // Helper: Convert Wavelength to RGB color (approximate)
+        function waveLengthToColor(wl) {
+            let R, G, B;
+            if (wl >= 380 && wl < 440) { R = -(wl - 440) / (440 - 380); G = 0; B = 1; }
+            else if (wl >= 440 && wl < 490) { R = 0; G = (wl - 440) / (490 - 440); B = 1; }
+            else if (wl >= 490 && wl < 510) { R = 0; G = 1; B = -(wl - 510) / (510 - 490); }
+            else if (wl >= 510 && wl < 580) { R = (wl - 510) / (580 - 510); G = 1; B = 0; }
+            else if (wl >= 580 && wl < 645) { R = 1; G = -(wl - 645) / (645 - 580); B = 0; }
+            else if (wl >= 645 && wl <= 750) { R = 1; G = 0; B = 0; }
+            else if (wl < 380) { R = 0.5; G = 0; B = 0.8; } // UV rep
+            else { R = 0.8; G = 0; B = 0; } // IR rep
+
+            let intensityFactor = 1;
+            if (wl > 700) intensityFactor = 0.3 + 0.7 * (750 - wl) / (750 - 700);
+            if (wl < 420) intensityFactor = 0.3 + 0.7 * (wl - 380) / (420 - 380);
+            
+            if (wl < 380 || wl > 750) intensityFactor = 0.4; // Faint for non-visible
+
+            R = Math.round(R * 255 * intensityFactor);
+            G = Math.round(G * 255 * intensityFactor);
+            B = Math.round(B * 255 * intensityFactor);
+            return `rgb(${R},${G},${B})`;
+        }
+
+        function updatePhysics() {
+            wavelength = parseInt(lambdaSlider.value);
+            intensity = parseInt(intensitySlider.value);
+            workFunction = parseFloat(metalSelect.value);
+            
+            lambdaVal.innerText = `${wavelength} nm`;
+            intensityVal.innerText = `${intensity}%`;
+            
+            let energy = hc / wavelength;
+            statE.innerText = `${energy.toFixed(2)} eV`;
+            statW.innerText = `${workFunction.toFixed(2)} eV`;
+
+            if (energy >= workFunction) {
+                let ek = energy - workFunction;
+                statResult.innerText = `Terjadi Emisi! Ek max = ${ek.toFixed(2)} eV`;
+                statResult.style.color = 'var(--primary)';
+            } else {
+                statResult.innerText = "Tidak ada emisi elektron";
+                statResult.style.color = 'var(--accent)';
+            }
+        }
+
+        // Event Listeners
+        lambdaSlider.addEventListener('input', updatePhysics);
+        intensitySlider.addEventListener('input', updatePhysics);
+        metalSelect.addEventListener('change', updatePhysics);
+
+        // Animation Loop
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let energy = hc / wavelength;
+
+            // Draw light beam area visually
+            let lightColor = waveLengthToColor(wavelength);
+            ctx.fillStyle = lightColor;
+            ctx.globalAlpha = (intensity / 100) * 0.15;
+            ctx.beginPath();
+            ctx.moveTo(canvas.width/2 - 100, 0);
+            ctx.lineTo(canvas.width/2 + 100, 0);
+            ctx.lineTo(canvas.width/2 + 200, canvas.height - 100);
+            ctx.lineTo(canvas.width/2 - 200, canvas.height - 100);
+            ctx.fill();
+            ctx.globalAlpha = 1.0;
+
+            // Spawn Photons
+            if (intensity > 0 && Math.random() < (intensity / 100) * 0.3) {
+                photons.push({
+                    x: canvas.width/2 + (Math.random() * 200 - 100),
+                    y: 0,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: 5,
+                    color: lightColor
+                });
+            }
+
+            // Draw Metal Plate
+            ctx.fillStyle = '#f9da82'; // Secondary color
+            ctx.fillRect(0, canvas.height - 100, canvas.width, 100);
+            ctx.fillStyle = '#d6b658'; // Darker for border/depth
+            ctx.fillRect(0, canvas.height - 100, canvas.width, 10);
+
+            // Update & Draw Photons
+            for (let i = photons.length - 1; i >= 0; i--) {
+                let p = photons[i];
+                p.x += p.vx;
+                p.y += p.vy;
+
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Add glow to photon
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = p.color;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Collision with metal
+                if (p.y >= canvas.height - 100) {
+                    // Check if electron is emitted
+                    if (energy >= workFunction) {
+                        let kineticEnergy = energy - workFunction;
+                        // Speed proportional to sqrt(Ek) for visual effect
+                        let speed = Math.sqrt(kineticEnergy) * 2 + 1; 
+                        electrons.push({
+                            x: p.x,
+                            y: canvas.height - 100,
+                            vx: (Math.random() - 0.5) * 2,
+                            vy: -speed
+                        });
+                    }
+                    photons.splice(i, 1);
+                }
+            }
+
+            // Update & Draw Electrons
+            ctx.fillStyle = '#15b5b0'; // Primary color for electrons
+            for (let i = electrons.length - 1; i >= 0; i--) {
+                let e = electrons[i];
+                e.x += e.vx;
+                e.y += e.vy;
+
+                ctx.beginPath();
+                ctx.arc(e.x, e.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Remove if out of bounds
+                if (e.y < 0 || e.x < 0 || e.x > canvas.width) {
+                    electrons.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // Init physics and start animation
+        updatePhysics();
+        animate();
+
+        // --- QUIZ LOGIC ---
+        function checkQuiz() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            const q3 = document.querySelector('input[name="q3"]:checked');
+            const resultDiv = document.getElementById('quiz-result');
+
+            if (!q1 || !q2 || !q3) {
+                resultDiv.innerText = "Harap jawab semua pertanyaan terlebih dahulu!";
+                resultDiv.className = "result-warning";
+                resultDiv.style.display = "block";
+                return;
+            }
+
+            let score = 0;
+            // Kunci Jawaban
+            // 1. C (Tidak ada elektron yang keluar jika frekuensi di bawah ambang)
+            // 2. B (Frekuensi cahaya dan jenis logam/fungsi kerja)
+            // 3. A (Partikel / Foton)
+            if (q1.value === 'C') score++;
+            if (q2.value === 'B') score++;
+            if (q3.value === 'A') score++;
+
+            if (score === 3) {
+                resultDiv.innerHTML = `<i data-lucide="award" style="vertical-align: middle; margin-right: 5px;"></i> Luar biasa! Anda menjawab semua soal dengan benar (Skor 100).`;
+                resultDiv.className = "result-success";
+            } else {
+                resultDiv.innerHTML = `<i data-lucide="alert-circle" style="vertical-align: middle; margin-right: 5px;"></i> Anda menjawab ${score} dari 3 soal dengan benar. Silakan periksa kembali materi dan coba lagi.`;
+                resultDiv.className = "result-warning";
+            }
+            resultDiv.style.display = "block";
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

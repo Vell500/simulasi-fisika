@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorium Virtual: Fokus Lensa - PhysLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --gray-light: #f4f6f8;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Navigasi */
+        nav {
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .back-link:hover { color: var(--primary); }
+
+        /* Container Utama */
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header-section h1 {
+            color: var(--text);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .header-section p { color: var(--text-light); }
+
+        /* Area Simulasi */
+        .simulation-card {
+            background: white;
+            border: 2px solid var(--gray-light);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            margin-bottom: 50px;
+        }
+
+        .sim-visual {
+            height: 300px;
+            background: #f0fdfc;
+            position: relative;
+            border-bottom: 2px solid var(--gray-light);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Elemen Optik */
+        .optical-axis {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: #cbd5e1;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .lens {
+            position: absolute;
+            left: 50%;
+            top: 10%;
+            height: 80%;
+            width: 20px;
+            background: rgba(21, 181, 176, 0.3);
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        .object, .image {
+            position: absolute;
+            width: 4px;
+            background: var(--text);
+            bottom: 50%;
+            transition: all 0.1s;
+        }
+
+        .object::after, .image::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -6px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 12px solid var(--text);
+        }
+
+        .image {
+            top: 50%;
+            background: var(--accent);
+            transform-origin: top;
+        }
+
+        .image::after {
+            top: auto;
+            bottom: -10px;
+            border-bottom: none;
+            border-top: 12px solid var(--accent);
+        }
+
+        .label {
+            position: absolute;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text);
+            width: 60px;
+            text-align: center;
+            transform: translateX(-50%);
+        }
+
+        /* Kontrol Simulasi */
+        .sim-controls {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            background: white;
+        }
+
+        .control-group {
+            background: var(--gray-light);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .control-group h3 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slider-container {
+            margin-bottom: 15px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+
+        .data-display {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .data-box {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            flex: 1;
+            margin: 0 5px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .data-box span {
+            display: block;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        /* Gamifikasi Input */
+        .challenge-box {
+            background: #fff9e6;
+            border: 2px solid var(--secondary);
+            text-align: center;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            outline: none;
+        }
+
+        input[type="number"]:focus { border-color: var(--secondary); }
+
+        button {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        button:hover { background: #119692; }
+
+        .feedback-msg {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            min-height: 20px;
+        }
+
+        /* Area Kuis */
+        .quiz-section {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid var(--gray-light);
+        }
+
+        .quiz-header {
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+        }
+
+        .question-card {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .question-card:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background: var(--bg);
+            border: 2px solid var(--gray-light);
+            color: var(--text);
+            text-align: left;
+            padding: 12px 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: #f0fdfc;
+        }
+
+        .option-btn.correct {
+            background: #d1fae5;
+            border-color: var(--success);
+            color: #065f46;
+        }
+
+        .option-btn.wrong {
+            background: #fee2e2;
+            border-color: var(--error);
+            color: #991b1b;
+        }
+
+        @media (max-width: 768px) {
+            .sim-controls { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">
+            <i data-lucide="atom"></i> PhysLearn
+        </a>
+        <a href="index.html" class="back-link">
+            <i data-lucide="arrow-left" size="18"></i> Kembali
+        </a>
+    </nav>
+
+    <div class="container">
+        <div class="header-section">
+            <h1>Eksperimen Fokus Lensa</h1>
+            <p>Geser posisi benda (s) untuk melihat perubahan jarak bayangan (s'). Gunakan data tersebut untuk memecahkan misteri nilai fokus (f) lensa ini.</p>
+        </div>
+
+        <div class="simulation-card">
+            <div class="sim-visual" id="visualizer">
+                <div class="optical-axis"></div>
+                <div class="lens"></div>
+                
+                <div class="object" id="obj"></div>
+                <div class="label" id="label-obj" style="bottom: 15%;">Benda</div>
+                
+                <div class="image" id="img"></div>
+                <div class="label" id="label-img" style="top: 15%;">Bayangan</div>
+            </div>
+
+            <div class="sim-controls">
+                <div class="control-group">
+                    <h3><i data-lucide="sliders-horizontal" size="20"></i> Kontrol Posisi Benda</h3>
+                    <div class="slider-container">
+                        <input type="range" id="s-slider" min="20" max="80" value="30" step="1">
+                    </div>
+                    <div class="data-display">
+                        <div class="data-box">
+                            Jarak Benda (s)
+                            <span id="s-val">30 cm</span>
+                        </div>
+                        <div class="data-box" style="background: #fff0f2; border-color: var(--accent);">
+                            Jarak Bayangan (s')
+                            <span id="sprime-val" style="color: var(--accent);">0 cm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group challenge-box">
+                    <h3><i data-lucide="brain-circuit" size="20"></i> Tantangan Analisis</h3>
+                    <p style="font-size: 0.85rem; margin-bottom: 10px;">Berdasarkan Hukum Lensa Tipis (1/f = 1/s + 1/s'), berapakah nilai fokus lensa misteri ini?</p>
+                    <div class="input-group">
+                        <input type="number" id="f-input" placeholder="f (cm)">
+                        <button onclick="checkFocalLength()">Cek Jawaban</button>
+                    </div>
+                    <div id="feedback" class="feedback-msg"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-section">
+            <div class="quiz-header">
+                <i data-lucide="check-square" size="28" color="var(--primary)"></i>
+                <h2>Uji Pemahaman</h2>
+            </div>
+            <div id="quiz-container">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Variabel Simulasi (Misteri)
+        // Kita tetapkan f secara acak antara 10, 15, atau 20 agar pengguna harus menghitung
+        const possibleF = [10, 15, 20];
+        const secretF = possibleF[Math.floor(Math.random() * possibleF.length)];
+        
+        // Elemen DOM Simulasi
+        const slider = document.getElementById('s-slider');
+        const sVal = document.getElementById('s-val');
+        const sPrimeVal = document.getElementById('sprime-val');
+        const objEl = document.getElementById('obj');
+        const imgEl = document.getElementById('img');
+        const labelObj = document.getElementById('label-obj');
+        const labelImg = document.getElementById('label-img');
+        
+        // Inisialisasi batas slider agar selalu menghasilkan bayangan nyata (s > f)
+        slider.min = secretF + 5;
+        slider.value = secretF * 2; // Default di 2f
+
+        function updateSimulation() {
+            const s = parseFloat(slider.value);
+            // Rumus lensa tipis: 1/f = 1/s + 1/s'  => s' = (s * f) / (s - f)
+            const sPrime = (s * secretF) / (s - secretF);
+            
+            // Update teks
+            sVal.innerText = s + " cm";
+            sPrimeVal.innerText = sPrime.toFixed(1) + " cm";
+
+            // Visual Mapping (1 cm = 4px, pusat layar = 50%)
+            const scale = 4;
+            const center = document.getElementById('visualizer').offsetWidth / 2;
+            
+            // Posisi X
+            const objX = center - (s * scale);
+            const imgX = center + (sPrime * scale);
+            
+            objEl.style.left = objX + 'px';
+            labelObj.style.left = objX + 'px';
+            
+            imgEl.style.left = imgX + 'px';
+            labelImg.style.left = imgX + 'px';
+
+            // Perbesaran (M = |s'/s|) untuk tinggi bayangan
+            const M = sPrime / s;
+            const baseHeight = 40; // tinggi benda dalam px
+            objEl.style.height = baseHeight + 'px';
+            imgEl.style.height = (baseHeight * M) + 'px';
+        }
+
+        // Event Listener Slider
+        slider.addEventListener('input', updateSimulation);
+        
+        // Jalankan sekali saat dimuat
+        window.onload = updateSimulation;
+        window.addEventListener('resize', updateSimulation); // Update posisi jika jendela di-resize
+
+        // Fungsi Cek Jawaban Tantangan
+        function checkFocalLength() {
+            const userF = parseFloat(document.getElementById('f-input').value);
+            const feedbackEl = document.getElementById('feedback');
+            
+            if (!userF) {
+                feedbackEl.innerText = "Masukkan angka terlebih dahulu!";
+                feedbackEl.style.color = "var(--text-light)";
+                return;
+            }
+
+            if (userF === secretF) {
+                feedbackEl.innerHTML = `<i data-lucide="check-circle" size="16"></i> Tepat sekali! Fokus lensa adalah ${secretF} cm.`;
+                feedbackEl.style.color = "var(--success)";
+            } else {
+                feedbackEl.innerHTML = `<i data-lucide="x-circle" size="16"></i> Kurang tepat. Coba hitung ulang 1/f = 1/s + 1/s'`;
+                feedbackEl.style.color = "var(--error)";
+            }
+            lucide.createIcons();
+        }
+
+        // === DATA & LOGIKA KUIS ===
+        const quizData = [
+            {
+                q: "Jika jarak benda (s) adalah 30 cm dan jarak bayangan (s') terbentuk pada layar di jarak 15 cm, berapakah titik fokus (f) lensa cembung tersebut?",
+                options: ["10 cm", "15 cm", "45 cm", "5 cm"],
+                answer: 0
+            },
+            {
+                q: "Pada percobaan ini, sifat bayangan yang dapat ditangkap oleh layar (bayangan nyata) yang dihasilkan lensa cembung selalu...",
+                options: ["Tegak dan diperkecil", "Terbalik dan diperbesar/diperkecil", "Tegak dan diperbesar", "Maya dan terbalik"],
+                answer: 1
+            },
+            {
+                q: "Apa yang terjadi pada jarak bayangan (s') jika posisi benda (s) terus digeser menjauhi lensa (menuju tak terhingga)?",
+                options: ["Bayangan menghilang", "Jarak bayangan mendekati titik nol", "Jarak bayangan mendekati nilai fokus (f)", "Jarak bayangan semakin tak terhingga"],
+                answer: 2
+            }
+        ];
+
+        const quizContainer = document.getElementById('quiz-container');
+
+        quizData.forEach((item, qIndex) => {
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question-card';
+            
+            let optionsHTML = '';
+            item.options.forEach((opt, optIndex) => {
+                optionsHTML += `<button class="option-btn" onclick="checkQuiz(${qIndex}, ${optIndex}, this)">${opt} <span></span></button>`;
+            });
+
+            qDiv.innerHTML = `
+                <div class="question-text">${qIndex + 1}. ${item.q}</div>
+                <div class="options" id="options-${qIndex}">
+                    ${optionsHTML}
+                </div>
+            `;
+            quizContainer.appendChild(qDiv);
+        });
+
+        function checkQuiz(qIndex, optIndex, btnElement) {
+            const container = document.getElementById(`options-${qIndex}`);
+            const buttons = container.querySelectorAll('.option-btn');
+            const correctAnswer = quizData[qIndex].answer;
+
+            // Nonaktifkan semua tombol setelah dipilih
+            buttons.forEach(btn => btn.disabled = true);
+
+            if (optIndex === correctAnswer) {
+                btnElement.classList.add('correct');
+                btnElement.querySelector('span').innerHTML = '<i data-lucide="check" size="18"></i>';
+            } else {
+                btnElement.classList.add('wrong');
+                btnElement.querySelector('span').innerHTML = '<i data-lucide="x" size="18"></i>';
+                // Tunjukkan yang benar
+                buttons[correctAnswer].classList.add('correct');
+                buttons[correctAnswer].querySelector('span').innerHTML = '<i data-lucide="check" size="18"></i>';
+            }
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

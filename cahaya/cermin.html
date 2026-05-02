@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Cermin & Lensa - PhysLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --correct: #15b5b0;
+            --wrong: #f9aab4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            padding: 1.2rem 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .back-link:hover { color: var(--primary); }
+
+        /* Main Container */
+        .container {
+            padding: 40px 8%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header-title h1 {
+            font-size: 2.2rem;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        /* Simulation Layout */
+        .sim-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 60px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid #eee;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            overflow: hidden;
+        }
+
+        .canvas-wrapper {
+            padding: 20px;
+            background: #f8fdfc;
+            border-right: 1px solid #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        canvas {
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            max-width: 100%;
+        }
+
+        .controls {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .controls h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .slider-group label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .data-panel {
+            background: #fff9e6;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .data-row span:last-child {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .property-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        /* Quiz Micro-Drill Section */
+        .quiz-section {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid #eee;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .question-card {
+            background: #fdfdfd;
+            border: 1px solid #eee;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+
+        .question-card:hover { border-color: var(--secondary); }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .option-label:hover { background: #f0fdfc; }
+        
+        input[type="radio"] { accent-color: var(--primary); }
+
+        .submit-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover {
+            background: #119894;
+            transform: translateY(-2px);
+        }
+
+        .result-panel {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 900px) {
+            .sim-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">
+            <i data-lucide="atom"></i> PhysLearn
+        </a>
+        <a href="index.html" class="back-link">
+            <i data-lucide="arrow-left" size="18"></i> Kembali ke Modul
+        </a>
+    </nav>
+
+    <div class="container">
+        <div class="header-title">
+            <h1>Simulasi Cermin Cekung</h1>
+            <p style="color: var(--text-light);">Geser posisi benda untuk mengamati pembentukan bayangan dan sifatnya.</p>
+        </div>
+
+        <div class="sim-container">
+            <div class="canvas-wrapper">
+                <canvas id="opticsCanvas" width="600" height="400"></canvas>
+            </div>
+            
+            <div class="controls">
+                <h3><i data-lucide="sliders-horizontal"></i> Panel Kontrol</h3>
+                
+                <div class="slider-group">
+                    <label>Jarak Benda (s) <span id="s-val">150 cm</span></label>
+                    <input type="range" id="objDistance" min="30" max="350" value="150" step="1">
+                </div>
+
+                <div class="data-panel">
+                    <div class="data-row"><span>Fokus (f)</span> <span>100 cm</span></div>
+                    <div class="data-row"><span>Jari-jari (R)</span> <span>200 cm</span></div>
+                    <div class="data-row"><span>Jarak Bayangan (s')</span> <span id="s-prime-val">300.0 cm</span></div>
+                    <div class="data-row"><span>Perbesaran (M)</span> <span id="m-val">2.00 x</span></div>
+                    <div id="properties" class="property-badge">Nyata, Terbalik, Diperbesar</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-section">
+            <div class="quiz-header">
+                <h2><i data-lucide="brain-circuit" style="vertical-align: middle; color: var(--primary);"></i> Micro-Drill: Uji Pemahaman</h2>
+                <p style="color: var(--text-light);">Uji pemahaman Anda setelah melakukan simulasi di atas.</p>
+            </div>
+
+            <form id="quizForm">
+                <div class="question-card" id="q1-card">
+                    <div class="question-text"><i data-lucide="help-circle" size="20" style="color: var(--secondary);"></i> 1. Jika benda diletakkan tepat di titik fokus (F) sebuah cermin cekung, dimanakah bayangan akan terbentuk?</div>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q1" value="a"> Tepat di pusat kelengkungan (R)</label>
+                        <label class="option-label"><input type="radio" name="q1" value="b"> Di belakang cermin</label>
+                        <label class="option-label"><input type="radio" name="q1" value="c"> Di tak terhingga</label>
+                        <label class="option-label"><input type="radio" name="q1" value="d"> Tepat di titik fokus (F)</label>
+                    </div>
+                </div>
+
+                <div class="question-card" id="q2-card">
+                    <div class="question-text"><i data-lucide="help-circle" size="20" style="color: var(--secondary);"></i> 2. Sebuah cermin cekung memiliki fokus 15 cm. Jika benda diletakkan pada jarak 10 cm dari cermin, sifat bayangan yang terjadi adalah...</div>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q2" value="a"> Maya, tegak, diperbesar</label>
+                        <label class="option-label"><input type="radio" name="q2" value="b"> Nyata, terbalik, diperkecil</label>
+                        <label class="option-label"><input type="radio" name="q2" value="c"> Nyata, terbalik, diperbesar</label>
+                        <label class="option-label"><input type="radio" name="q2" value="d"> Maya, terbalik, diperbesar</label>
+                    </div>
+                </div>
+
+                <div class="question-card" id="q3-card">
+                    <div class="question-text"><i data-lucide="help-circle" size="20" style="color: var(--secondary);"></i> 3. Pada simulasi cermin cekung, jika jarak benda (s) lebih besar dari jari-jari kelengkungan (R), maka sifat bayangannya selalu...</div>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q3" value="a"> Maya, tegak, diperkecil</label>
+                        <label class="option-label"><input type="radio" name="q3" value="b"> Nyata, terbalik, diperbesar</label>
+                        <label class="option-label"><input type="radio" name="q3" value="c"> Maya, tegak, diperbesar</label>
+                        <label class="option-label"><input type="radio" name="q3" value="d"> Nyata, terbalik, diperkecil</label>
+                    </div>
+                </div>
+
+                <button type="button" class="submit-btn" onclick="checkQuiz()">Kirim Jawaban <i data-lucide="send" size="18"></i></button>
+                <div id="quizResult" class="result-panel"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Inisialisasi Ikon
+        lucide.createIcons();
+
+        // SIMULASI FISIKA CERMIN CEKUNG
+        const canvas = document.getElementById('opticsCanvas');
+        const ctx = canvas.getContext('2d');
+        const slider = document.getElementById('objDistance');
+        
+        // Konstanta Optik (Skala Piksel)
+        const f = 100; // Jarak Fokus
+        const R = 2 * f; // Jari-jari (Pusat Kelengkungan)
+        const mirrorX = 450; // Posisi x cermin (Vertex)
+        const axisY = 200; // Sumbu Utama y
+        const objHeight = 50; // Tinggi benda
+
+        function drawSimulation() {
+            // Bersihkan canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            let s = parseFloat(slider.value); // Jarak Benda sesungguhnya
+            
+            // Hindari s tepat di fokus agar tidak error pembagian tak terhingga
+            if(s === f) s = f + 0.1; 
+
+            // Rumus Optik: 1/f = 1/s + 1/s' => s' = (s * f) / (s - f)
+            let s_prime = (s * f) / (s - f);
+            let M = s_prime / s; // Perbesaran
+            let imgHeight = -objHeight * M; // Tinggi bayangan (negatif jika terbalik)
+
+            let objX = mirrorX - s;
+            let imgX = mirrorX - s_prime;
+
+            // Menggambar Grid/Latar Belakang Ringan
+            ctx.strokeStyle = '#f0f0f0';
+            ctx.lineWidth = 1;
+            for(let i=0; i<600; i+=20) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 400); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(600, i); ctx.stroke();
+            }
+
+            // Menggambar Sumbu Utama
+            ctx.beginPath();
+            ctx.moveTo(0, axisY);
+            ctx.lineTo(600, axisY);
+            ctx.strokeStyle = '#a57d84';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Titik Fokus (F) dan Pusat (R)
+            drawPoint(mirrorX - f, axisY, 'F');
+            drawPoint(mirrorX - R, axisY, 'R');
+
+            // Menggambar Cermin Cekung
+            ctx.beginPath();
+            ctx.arc(mirrorX - R, axisY, R, -Math.PI/6, Math.PI/6);
+            ctx.strokeStyle = '#15b5b0';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Sinar Istimewa (Ray Tracing)
+            ctx.lineWidth = 1.5;
+            
+            // Sinar 1: Sejajar sumbu utama, dipantulkan melalui fokus
+            ctx.beginPath();
+            ctx.moveTo(objX, axisY - objHeight);
+            ctx.lineTo(mirrorX, axisY - objHeight); // Menuju cermin
+            ctx.strokeStyle = 'rgba(249, 170, 180, 0.8)'; // Accent color
+            ctx.stroke();
+            
+            // Pantulan Sinar 1
+            ctx.beginPath();
+            ctx.moveTo(mirrorX, axisY - objHeight);
+            // Mencari arah pantulan melewati F
+            let dirX1 = (mirrorX - f) - mirrorX;
+            let dirY1 = axisY - (axisY - objHeight);
+            let t1 = s_prime > 0 ? 3 : -3; // perpanjangan sinar
+            ctx.lineTo(mirrorX + dirX1 * t1, (axisY - objHeight) + dirY1 * t1);
+            if(s_prime < 0) ctx.setLineDash([5, 5]); // Garis putus-putus jika maya
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Sinar 2: Menuju vertex, dipantulkan dengan sudut sama
+            ctx.beginPath();
+            ctx.moveTo(objX, axisY - objHeight);
+            ctx.lineTo(mirrorX, axisY);
+            ctx.strokeStyle = 'rgba(249, 218, 130, 0.8)'; // Secondary color
+            ctx.stroke();
+
+            // Pantulan Sinar 2
+            ctx.beginPath();
+            ctx.moveTo(mirrorX, axisY);
+            let dirX2 = -mirrorX;
+            let dirY2 = objHeight;
+            let t2 = s_prime > 0 ? (mirrorX/s) * 2 : -2;
+            ctx.lineTo(mirrorX + (objX - mirrorX)*t2, axisY + objHeight*t2);
+            if(s_prime < 0) ctx.setLineDash([5, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Gambar Benda (Panah Biru Teal)
+            drawArrow(objX, axisY, objX, axisY - objHeight, '#15b5b0');
+
+            // Gambar Bayangan (Panah Merah Muda) - Batasi agar tidak offscreen berlebihan
+            if(Math.abs(s_prime) < 1000) {
+                drawArrow(imgX, axisY, imgX, axisY - imgHeight, '#f9aab4', s_prime < 0);
+            }
+
+            // Update Panel Data
+            updatePanel(s, s_prime, Math.abs(M));
+        }
+
+        function drawPoint(x, y, label) {
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, Math.PI*2);
+            ctx.fillStyle = '#7a4850';
+            ctx.fill();
+            ctx.font = "14px Poppins";
+            ctx.fillText(label, x - 5, y + 20);
+        }
+
+        function drawArrow(fromx, fromy, tox, toy, color, isDashed=false) {
+            let headlen = 10; 
+            let dx = tox - fromx;
+            let dy = toy - fromy;
+            let angle = Math.atan2(dy, dx);
+            ctx.beginPath();
+            if(isDashed) ctx.setLineDash([5, 5]);
+            ctx.moveTo(fromx, fromy);
+            ctx.lineTo(tox, toy);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Kepala panah
+            ctx.beginPath();
+            ctx.moveTo(tox, toy);
+            ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.moveTo(tox, toy);
+            ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.stroke();
+        }
+
+        function updatePanel(s, s_prime, M) {
+            document.getElementById('s-val').innerText = s.toFixed(1) + " cm";
+            
+            if(Math.abs(s_prime) > 800) {
+                document.getElementById('s-prime-val').innerText = "Tak Terhingga";
+                document.getElementById('m-val').innerText = "Tak Terhingga";
+                document.getElementById('properties').innerText = "Tidak Ada Bayangan Jelas";
+                document.getElementById('properties').style.background = "#a57d84";
+                return;
+            }
+
+            document.getElementById('s-prime-val').innerText = s_prime.toFixed(1) + " cm";
+            document.getElementById('m-val').innerText = M.toFixed(2) + " x";
+
+            let prop1 = s_prime > 0 ? "Nyata" : "Maya";
+            let prop2 = s_prime > 0 ? "Terbalik" : "Tegak";
+            let prop3 = M > 1 ? "Diperbesar" : (M < 1 ? "Diperkecil" : "Sama Besar");
+
+            let badge = document.getElementById('properties');
+            badge.innerText = `${prop1}, ${prop2}, ${prop3}`;
+            badge.style.background = s_prime > 0 ? "var(--primary)" : "var(--accent)";
+        }
+
+        // Event Listeners
+        slider.addEventListener('input', drawSimulation);
+        window.onload = drawSimulation;
+
+        // KUIS MICRO-DRILL
+        function checkQuiz() {
+            const answers = { q1: 'c', q2: 'a', q3: 'd' };
+            let score = 0;
+            const form = document.getElementById('quizForm');
+
+            for (let i = 1; i <= 3; i++) {
+                let card = document.getElementById(`q${i}-card`);
+                let selected = form.querySelector(`input[name="q${i}"]:checked`);
+                
+                if (selected) {
+                    if (selected.value === answers[`q${i}`]) {
+                        score++;
+                        card.style.borderColor = 'var(--correct)';
+                        card.style.boxShadow = '0 0 10px rgba(21, 181, 176, 0.2)';
+                    } else {
+                        card.style.borderColor = 'var(--wrong)';
+                        card.style.boxShadow = '0 0 10px rgba(249, 170, 180, 0.2)';
+                    }
+                } else {
+                    card.style.borderColor = 'var(--wrong)';
+                }
+            }
+
+            let resultPanel = document.getElementById('quizResult');
+            resultPanel.style.display = 'block';
+            let finalScore = Math.round((score / 3) * 100);
+
+            if (finalScore === 100) {
+                resultPanel.style.backgroundColor = '#e0f7f6';
+                resultPanel.style.color = 'var(--primary)';
+                resultPanel.innerHTML = `<i data-lucide="check-circle"></i> Sempurna! Skor Anda: ${finalScore}`;
+            } else {
+                resultPanel.style.backgroundColor = '#fff0f2';
+                resultPanel.style.color = 'var(--text)';
+                resultPanel.innerHTML = `<i data-lucide="alert-circle"></i> Skor Anda: ${finalScore}. Coba pelajari simulasi lagi!`;
+            }
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alat Optik: Simulasi & Kuis - PhysLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --success: #4ade80;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            padding: 1.2rem 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .container {
+            padding: 40px 8%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            color: var(--text);
+        }
+
+        /* Simulation Section */
+        .simulation-card {
+            background: #f8fcfc;
+            border: 2px solid #e0f2f1;
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 50px;
+            box-shadow: 0 10px 30px rgba(21, 181, 176, 0.05);
+        }
+
+        .sim-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        canvas {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            width: 100%;
+            max-height: 400px;
+            margin-bottom: 20px;
+            cursor: crosshair;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid #eee;
+        }
+
+        .control-group {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+
+        .data-display {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .data-box {
+            background: var(--secondary);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* Quiz Section */
+        .quiz-section {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        }
+
+        .quiz-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            color: var(--accent);
+        }
+
+        .question {
+            margin-bottom: 30px;
+        }
+
+        .question h4 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .option:hover {
+            border-color: var(--secondary);
+            background: #fffdf5;
+        }
+
+        .option input {
+            margin-right: 15px;
+            accent-color: var(--primary);
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+        }
+
+        .btn-submit:hover {
+            background: #129c97;
+            transform: translateY(-2px);
+        }
+
+        #quizResult {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+        }
+
+        .correct-ans {
+            background-color: #dcfce7 !important;
+            border-color: var(--success) !important;
+        }
+
+        .wrong-ans {
+            background-color: #ffe4e6 !important;
+            border-color: var(--accent) !important;
+        }
+
+        @media (max-width: 768px) {
+            .controls { flex-direction: column; }
+            .data-display { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../index.html" class="logo">
+            <i data-lucide="atom"></i> PhysLearn
+        </a>
+        <a href="index.html" class="back-link">
+            <i data-lucide="arrow-left" size="18"></i> Kembali ke Cahaya
+        </a>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Alat Optik: Simulasi Lensa Cembung</h1>
+            <p style="color: var(--text-light);">Eksplorasi pembentukan bayangan pada Lup dan Kamera.</p>
+        </div>
+
+        <div class="simulation-card">
+            <div class="sim-header">
+                <i data-lucide="eye"></i>
+                <h2>Laboratorium Virtual</h2>
+            </div>
+            
+            <canvas id="opticsCanvas" width="800" height="400"></canvas>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label>Jarak Benda (s) = <span id="sVal">150</span> cm</label>
+                    <input type="range" id="sSlider" min="20" max="300" value="150">
+                </div>
+                <div class="control-group">
+                    <label>Fokus Lensa (f) = <span id="fVal">100</span> cm</label>
+                    <input type="range" id="fSlider" min="50" max="200" value="100">
+                </div>
+            </div>
+
+            <div class="data-display">
+                <div class="data-box">Jarak Bayangan (s'): <span id="sPrimeVal">-</span> cm</div>
+                <div class="data-box">Perbesaran (M): <span id="mVal">-</span>x</div>
+                <div class="data-box" style="background: var(--accent); color: white;">Sifat: <span id="sifatVal">-</span></div>
+            </div>
+        </div>
+
+        <div class="quiz-section">
+            <div class="quiz-header">
+                <i data-lucide="brain-circuit"></i>
+                <h2>Uji Pemahaman</h2>
+            </div>
+
+            <form id="quizForm">
+                <div class="question">
+                    <h4>1. Berdasarkan simulasi, agar lup (kaca pembesar) menghasilkan bayangan maya dan diperbesar, benda harus diletakkan di...</h4>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q1" value="a"> Tepat di titik fokus (f)</label>
+                        <label class="option"><input type="radio" name="q1" value="b"> Antara lensa dan titik fokus (s &lt; f)</label>
+                        <label class="option"><input type="radio" name="q1" value="c"> Lebih jauh dari titik fokus (s &gt; f)</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h4>2. Pada mikroskop, lensa objektif (dekat dengan benda) berfungsi untuk membentuk bayangan yang bersifat...</h4>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q2" value="a"> Nyata, terbalik, diperbesar</label>
+                        <label class="option"><input type="radio" name="q2" value="b"> Maya, tegak, diperbesar</label>
+                        <label class="option"><input type="radio" name="q2" value="c"> Nyata, tegak, diperkecil</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h4>3. Alat optik yang terdiri dari dua lensa cembung di mana jarak fokus lensa objektif lebih besar dari jarak fokus lensa okuler adalah...</h4>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q3" value="a"> Mikroskop</label>
+                        <label class="option"><input type="radio" name="q3" value="b"> Teleskop / Teropong Bintang</label>
+                        <label class="option"><input type="radio" name="q3" value="c"> Kamera</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Kirim Jawaban <i data-lucide="send" size="18"></i></button>
+                <div id="quizResult"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // --- SIMULASI OPTIK SCRIPT ---
+        const canvas = document.getElementById('opticsCanvas');
+        const ctx = canvas.getContext('2d');
+        const sSlider = document.getElementById('sSlider');
+        const fSlider = document.getElementById('fSlider');
+        
+        const sVal = document.getElementById('sVal');
+        const fVal = document.getElementById('fVal');
+        const sPrimeVal = document.getElementById('sPrimeVal');
+        const mVal = document.getElementById('mVal');
+        const sifatVal = document.getElementById('sifatVal');
+
+        let s, f;
+        const objHeight = 50;
+
+        function drawSimulation() {
+            s = parseFloat(sSlider.value);
+            f = parseFloat(fSlider.value);
+            
+            sVal.innerText = s;
+            fVal.innerText = f;
+
+            // Perhitungan Fisika
+            let sPrime = (s * f) / (s - f);
+            let M = Math.abs(sPrime / s);
+            
+            if (s === f) {
+                sPrimeVal.innerText = "Tak Hingga";
+                mVal.innerText = "Tak Hingga";
+                sifatVal.innerText = "Tidak ada bayangan";
+            } else {
+                sPrimeVal.innerText = sPrime.toFixed(1);
+                mVal.innerText = M.toFixed(2);
+                
+                if (sPrime < 0) {
+                    sifatVal.innerText = "Maya, Tegak, " + (M > 1 ? "Diperbesar" : "Diperkecil");
+                } else {
+                    sifatVal.innerText = "Nyata, Terbalik, " + (M > 1 ? "Diperbesar" : "Diperkecil");
+                }
+            }
+
+            // Rendering Canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Sumbu utama
+            ctx.beginPath();
+            ctx.moveTo(0, cy);
+            ctx.lineTo(canvas.width, cy);
+            ctx.strokeStyle = '#a57d84';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Lensa cembung (representasi garis tengah)
+            ctx.beginPath();
+            ctx.moveTo(cx, 20);
+            ctx.lineTo(cx, canvas.height - 20);
+            ctx.strokeStyle = '#15b5b0';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Titik Fokus
+            ctx.fillStyle = '#f9aab4';
+            ctx.beginPath(); ctx.arc(cx - f, cy, 4, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(cx + f, cy, 4, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#7a4850';
+            ctx.fillText("F", cx - f - 5, cy + 20);
+            ctx.fillText("F", cx + f - 5, cy + 20);
+
+            // Benda (Panah Biru)
+            drawArrow(cx - s, cy, cx - s, cy - objHeight, '#15b5b0', 'Benda');
+
+            // Bayangan
+            if (s !== f) {
+                let imgHeight = objHeight * (sPrime / s);
+                let imgColor = sPrime < 0 ? '#f9da82' : '#f9aab4'; // Kuning maya, Pink nyata
+                drawArrow(cx + sPrime, cy, cx + sPrime, cy + imgHeight, imgColor, 'Bayangan');
+            }
+        }
+
+        function drawArrow(x1, y1, x2, y2, color, label) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Mata panah
+            const headlen = 10;
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - headlen * Math.cos(angle - Math.PI / 6), y2 - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - headlen * Math.cos(angle + Math.PI / 6), y2 - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.fillStyle = color;
+            ctx.fill();
+
+            ctx.fillStyle = '#7a4850';
+            ctx.font = "12px Poppins";
+            ctx.fillText(label, x2 - 20, y2 + (y2 < y1 ? -10 : 20));
+        }
+
+        sSlider.addEventListener('input', drawSimulation);
+        fSlider.addEventListener('input', drawSimulation);
+        drawSimulation(); // Initial draw
+
+        // --- KUIS SCRIPT ---
+        const correctAnswers = {
+            q1: 'b',
+            q2: 'a',
+            q3: 'b'
+        };
+
+        document.getElementById('quizForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let score = 0;
+            const formData = new FormData(this);
+            
+            // Reset styling
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('correct-ans', 'wrong-ans');
+            });
+
+            for (let [question, answer] of formData.entries()) {
+                const selectedLabel = document.querySelector(`input[name="${question}"][value="${answer}"]`).parentElement;
+                
+                if (answer === correctAnswers[question]) {
+                    score++;
+                    selectedLabel.classList.add('correct-ans');
+                } else {
+                    selectedLabel.classList.add('wrong-ans');
+                    // Highlight correct answer
+                    document.querySelector(`input[name="${question}"][value="${correctAnswers[question]}"]`).parentElement.classList.add('correct-ans');
+                }
+            }
+
+            const resultDiv = document.getElementById('quizResult');
+            resultDiv.style.display = 'block';
+            
+            if (score === 3) {
+                resultDiv.style.backgroundColor = '#dcfce7';
+                resultDiv.style.color = '#15803d';
+                resultDiv.innerHTML = `Luar biasa! Skor Anda: 100. Anda sudah memahami konsep Alat Optik dengan sangat baik.`;
+            } else {
+                resultDiv.style.backgroundColor = '#fff7ed';
+                resultDiv.style.color = '#c2410c';
+                resultDiv.innerHTML = `Skor Anda: ${Math.round((score/3)*100)}. Pelajari lagi area simulasi dan coba kembali!`;
+            }
+        });
+    </script>
+</body>
+</html>

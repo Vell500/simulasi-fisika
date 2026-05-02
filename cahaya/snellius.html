@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Hukum Snellius - PhysLearn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #15b5b0;
+            --secondary: #f9da82;
+            --bg: #ffffff;
+            --accent: #f9aab4;
+            --text: #7a4850;
+            --text-light: #a57d84;
+            --medium1: #f0fdfc; /* Light Primary */
+            --medium2: #fff9e6; /* Light Secondary */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); line-height: 1.6; }
+
+        /* Navigation */
+        nav {
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-weight: 700; font-size: 1.2rem; color: var(--primary); display: flex; align-items: center; gap: 8px; text-decoration: none; }
+        .back-link { text-decoration: none; color: var(--text); font-size: 0.9rem; display: flex; align-items: center; gap: 5px; font-weight: 500; }
+        .back-link:hover { color: var(--primary); }
+
+        /* Header */
+        .header { padding: 40px 5% 20px; text-align: center; }
+        .header h1 { color: var(--text); font-size: 2rem; margin-bottom: 10px; }
+        .header p { color: var(--text-light); max-width: 600px; margin: 0 auto; }
+
+        /* Main Container */
+        .container { padding: 20px 5%; max-width: 1200px; margin: 0 auto; }
+
+        /* Simulation Layout */
+        .sim-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 30px;
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            margin-bottom: 50px;
+        }
+
+        /* Canvas Area */
+        .canvas-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fafafa;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #eee;
+        }
+        canvas { max-width: 100%; height: auto; }
+
+        /* Controls Area */
+        .controls { display: flex; flex-direction: column; gap: 20px; }
+        .control-group { background: #fafafa; padding: 15px 20px; border-radius: 12px; border: 1px solid #eee; }
+        .control-group label { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; margin-bottom: 10px; }
+        .val-badge { background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; }
+        
+        input[type="range"] {
+            width: 100%; appearance: none; height: 6px; background: #ddd; border-radius: 5px; outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none; width: 18px; height: 18px; background: var(--primary); border-radius: 50%; cursor: pointer;
+        }
+
+        .result-box {
+            background: var(--medium1); border: 2px solid var(--primary); padding: 15px; border-radius: 12px; text-align: center;
+        }
+        .result-box h3 { color: var(--primary); margin-bottom: 5px; font-size: 1.1rem; }
+        .tir-warning { color: var(--accent); font-weight: 600; display: none; margin-top: 10px; font-size: 0.9rem; }
+
+        /* Quiz Section */
+        .quiz-section {
+            background: var(--medium2); padding: 40px; border-radius: 20px;
+        }
+        .quiz-header { display: flex; align-items: center; gap: 10px; margin-bottom: 30px; }
+        .quiz-header i { color: var(--primary); }
+        
+        .question-card {
+            background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #eee;
+        }
+        .question-card h4 { margin-bottom: 15px; font-weight: 600; }
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option-label {
+            display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid #ddd;
+            border-radius: 8px; cursor: pointer; transition: 0.3s;
+        }
+        .option-label:hover { background: #f9f9f9; border-color: var(--primary); }
+        input[type="radio"] { accent-color: var(--primary); }
+
+        .btn-submit {
+            background: var(--primary); color: white; border: none; padding: 12px 30px; font-size: 1rem;
+            border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; display: flex; align-items: center; gap: 10px; margin-top: 20px;
+        }
+        .btn-submit:hover { background: #119994; transform: translateY(-2px); }
+
+        #quiz-result {
+            margin-top: 20px; padding: 15px; border-radius: 8px; font-weight: 600; display: none; text-align: center;
+        }
+        .result-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .result-fail { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        @media (max-width: 768px) {
+            .sim-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../index.html" class="logo"><i data-lucide="atom"></i> PhysLearn</a>
+        <a href="index.html" class="back-link"><i data-lucide="arrow-left" size="18"></i> Kembali</a>
+    </nav>
+
+    <div class="header">
+        <h1>Laboratorium: Hukum Snellius</h1>
+        <p>Eksplorasi pembiasan cahaya antar dua medium.</p>
+    </div>
+
+    <div class="container">
+        <div class="sim-grid">
+            <div class="canvas-container">
+                <canvas id="snellCanvas" width="500" height="400"></canvas>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label>Sudut Datang (&theta;₁) <span class="val-badge" id="val-theta1">45&deg;</span></label>
+                    <input type="range" id="theta1" min="0" max="89" value="45">
+                </div>
+
+                <div class="control-group">
+                    <label>Indeks Bias Medium 1 (n₁) <span class="val-badge" id="val-n1">1.00 (Udara)</span></label>
+                    <input type="range" id="n1" min="1.0" max="2.5" step="0.01" value="1.00">
+                </div>
+
+                <div class="control-group">
+                    <label>Indeks Bias Medium 2 (n₂) <span class="val-badge" id="val-n2">1.33 (Air)</span></label>
+                    <input type="range" id="n2" min="1.0" max="2.5" step="0.01" value="1.33">
+                </div>
+
+                <div class="result-box">
+                    <h3>Sudut Bias (&theta;₂)</h3>
+                    <div style="font-size: 2rem; font-weight: 700;" id="val-theta2">32.1&deg;</div>
+                    <div class="tir-warning" id="tir-warning"><i data-lucide="alert-triangle" size="16" style="display:inline; vertical-align:middle;"></i> Pemantulan Sempurna Terjadi!</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-section">
+            <div class="quiz-header">
+                <i data-lucide="clipboard-check" size="28"></i>
+                <h2>Kuis Pemahaman Konsep</h2>
+            </div>
+            
+            <form id="quizForm">
+                <div class="question-card">
+                    <h4>1. Jika cahaya merambat dari medium yang kurang rapat (n kecil) ke medium yang lebih rapat (n besar), bagaimana arah sinar biasnya?</h4>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q1" value="a"> A. Menjauhi garis normal</label>
+                        <label class="option-label"><input type="radio" name="q1" value="b"> B. Mendekati garis normal</label>
+                        <label class="option-label"><input type="radio" name="q1" value="c"> C. Lurus tanpa dibiaskan</label>
+                        <label class="option-label"><input type="radio" name="q1" value="d"> D. Dipantulkan kembali</label>
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <h4>2. Syarat terjadinya pemantulan sempurna (Total Internal Reflection) adalah...</h4>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q2" value="a"> A. n₁ < n₂ dan sudut datang > sudut kritis</label>
+                        <label class="option-label"><input type="radio" name="q2" value="b"> B. n₁ > n₂ dan sudut datang < sudut kritis</label>
+                        <label class="option-label"><input type="radio" name="q2" value="c"> C. n₁ > n₂ dan sudut datang > sudut kritis</label>
+                        <label class="option-label"><input type="radio" name="q2" value="d"> D. n₁ = n₂</label>
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <h4>3. Berdasarkan simulasi di atas, jika medium 1 dan medium 2 memiliki indeks bias yang sama persis (n₁ = n₂), berapakah sudut bias jika sudut datang 30&deg;?</h4>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q3" value="a"> A. 0&deg;</label>
+                        <label class="option-label"><input type="radio" name="q3" value="b"> B. 15&deg;</label>
+                        <label class="option-label"><input type="radio" name="q3" value="c"> C. 30&deg;</label>
+                        <label class="option-label"><input type="radio" name="q3" value="d"> D. 90&deg;</label>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-submit" onclick="checkQuiz()">Periksa Jawaban <i data-lucide="check-circle"></i></button>
+                <div id="quiz-result"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // SIMULATION LOGIC
+        const canvas = document.getElementById('snellCanvas');
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width;
+        const h = canvas.height;
+
+        const inputTheta1 = document.getElementById('theta1');
+        const inputN1 = document.getElementById('n1');
+        const inputN2 = document.getElementById('n2');
+
+        const dispTheta1 = document.getElementById('val-theta1');
+        const dispN1 = document.getElementById('val-n1');
+        const dispN2 = document.getElementById('val-n2');
+        const dispTheta2 = document.getElementById('val-theta2');
+        const tirWarning = document.getElementById('tir-warning');
+
+        function getMediumName(n) {
+            n = parseFloat(n);
+            if (n === 1.0) return "Udara";
+            if (n >= 1.33 && n < 1.4) return "Air";
+            if (n >= 1.4 && n < 1.6) return "Kaca";
+            if (n >= 2.4) return "Intan";
+            return "Material Kustom";
+        }
+
+        function drawSimulation() {
+            let theta1 = parseFloat(inputTheta1.value);
+            let n1 = parseFloat(inputN1.value);
+            let n2 = parseFloat(inputN2.value);
+
+            // Update Labels
+            dispTheta1.innerHTML = `${theta1}&deg;`;
+            dispN1.innerHTML = `${n1.toFixed(2)} (${getMediumName(n1)})`;
+            dispN2.innerHTML = `${n2.toFixed(2)} (${getMediumName(n2)})`;
+
+            // Clear Canvas
+            ctx.clearRect(0, 0, w, h);
+
+            // Draw Mediums
+            ctx.fillStyle = '#f0fdfc'; // Medium 1
+            ctx.fillRect(0, 0, w, h/2);
+            ctx.fillStyle = '#fff9e6'; // Medium 2
+            ctx.fillRect(0, h/2, w, h/2);
+
+            // Draw Normal Line
+            ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(w/2, 0);
+            ctx.lineTo(w/2, h);
+            ctx.strokeStyle = '#a57d84';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.setLineDash([]); // Reset dash
+
+            // Math: Snell's Law
+            let theta1_rad = theta1 * Math.PI / 180;
+            let sin_theta2 = (n1 / n2) * Math.sin(theta1_rad);
+            let isTIR = sin_theta2 > 1;
+
+            // Draw Incident Ray
+            let rayLength = 250;
+            let startX = w/2 - rayLength * Math.sin(theta1_rad);
+            let startY = h/2 - rayLength * Math.cos(theta1_rad);
+
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(w/2, h/2);
+            ctx.strokeStyle = '#f9aab4'; // Laser color
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Draw Arrows
+            ctx.beginPath();
+            ctx.arc(w/2, h/2, 4, 0, Math.PI*2);
+            ctx.fillStyle = '#15b5b0';
+            ctx.fill();
+
+            if (isTIR) {
+                // Total Internal Reflection
+                dispTheta2.innerHTML = "TIR";
+                tirWarning.style.display = "block";
+                
+                // Reflected Ray
+                let endX = w/2 + rayLength * Math.sin(theta1_rad);
+                let endY = h/2 - rayLength * Math.cos(theta1_rad);
+                
+                ctx.beginPath();
+                ctx.moveTo(w/2, h/2);
+                ctx.lineTo(endX, endY);
+                ctx.strokeStyle = '#f9aab4';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            } else {
+                // Refraction
+                tirWarning.style.display = "none";
+                let theta2_rad = Math.asin(sin_theta2);
+                let theta2 = theta2_rad * 180 / Math.PI;
+                dispTheta2.innerHTML = `${theta2.toFixed(1)}&deg;`;
+
+                let endX = w/2 + rayLength * Math.sin(theta2_rad);
+                let endY = h/2 + rayLength * Math.cos(theta2_rad);
+
+                ctx.beginPath();
+                ctx.moveTo(w/2, h/2);
+                ctx.lineTo(endX, endY);
+                ctx.strokeStyle = '#15b5b0'; // Refracted ray color
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Draw Angle Arc 2
+                ctx.beginPath();
+                ctx.arc(w/2, h/2, 40, Math.PI/2 - theta2_rad, Math.PI/2, false);
+                ctx.strokeStyle = '#7a4850';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+
+            // Draw Angle Arc 1
+            ctx.beginPath();
+            ctx.arc(w/2, h/2, 40, 1.5 * Math.PI, 1.5 * Math.PI + theta1_rad, false);
+            ctx.strokeStyle = '#7a4850';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+
+        // Event Listeners
+        inputTheta1.addEventListener('input', drawSimulation);
+        inputN1.addEventListener('input', drawSimulation);
+        inputN2.addEventListener('input', drawSimulation);
+
+        // Initial Draw
+        drawSimulation();
+
+
+        // QUIZ LOGIC
+        function checkQuiz() {
+            const answers = { q1: 'b', q2: 'c', q3: 'c' };
+            let score = 0;
+            let form = document.getElementById('quizForm');
+            const resultBox = document.getElementById('quiz-result');
+
+            for (let q in answers) {
+                let selected = form.querySelector(`input[name="${q}"]:checked`);
+                if (selected && selected.value === answers[q]) {
+                    score++;
+                }
+            }
+
+            resultBox.style.display = 'block';
+            if (score === 3) {
+                resultBox.className = 'result-success';
+                resultBox.innerHTML = 'Luar Biasa! Anda menjawab semua pertanyaan dengan benar (Skor 100/100).';
+            } else {
+                resultBox.className = 'result-fail';
+                resultBox.innerHTML = `Terus berlatih! Anda menjawab ${score} dari 3 pertanyaan dengan benar.`;
+            }
+        }
+    </script>
+</body>
+</html>
