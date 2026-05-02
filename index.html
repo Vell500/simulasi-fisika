@@ -52,9 +52,54 @@
             gap: 10px;
         }
 
+        /* Credits Section */
+        .credits-bar {
+            background-color: #fbfbfb;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 0.75rem 10%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            flex-wrap: wrap;
+        }
+
+        .credits-title {
+            font-weight: 600;
+            color: var(--text);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .credits-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 12px;
+            list-style: none;
+            justify-content: center;
+        }
+
+        .credits-list li {
+            background: white;
+            padding: 3px 12px;
+            border-radius: 15px;
+            border: 1px solid #eee;
+            color: var(--text-light);
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+
+        .credits-list li:hover {
+            border-color: var(--primary);
+            color: var(--text);
+        }
+
         /* Hero Section */
         .hero {
-            padding: 80px 10%;
+            padding: 60px 10% 80px;
             text-align: center;
             background: linear-gradient(180deg, #f0fdfc 0%, #ffffff 100%);
         }
@@ -154,6 +199,7 @@
         @media (max-width: 768px) {
             .hero h1 { font-size: 2rem; }
             .grid-portal { grid-template-columns: 1fr; }
+            .credits-bar { flex-direction: column; gap: 10px; text-align: center; }
         }
     </style>
 </head>
@@ -164,6 +210,20 @@
             <i data-lucide="atom"></i> Simuphys
         </div>
     </nav>
+
+    <div class="credits-bar">
+        <span class="credits-title">
+            <i data-lucide="users" style="width: 16px; height: 16px;"></i> Tim Pengembang:
+        </span>
+        <ul class="credits-list">
+            <li>Kenzie Daniswara A. D.</li>
+            <li>M. Reyhan Daffa A. F</li>
+            <li>Marsello Nava A.</li>
+            <li>M. Azhar S. A.</li>
+            <li>M. Irgi Fahrezi</li>
+            <li>Pasha Maulana</li>
+        </ul>
+    </div>
 
     <section class="hero">
         <span class="badge">E-Learning Fisika</span>
@@ -185,18 +245,6 @@
                 <p>Pelajari perpindahan kalor, sistem gas ideal, dan hukum termal.</p>
             </a>
 
-            <!-- <a href="listrik/index.html" class="card">
-                <div class="icon-box"><i data-lucide="zap"></i></div>
-                <h3>Listrik</h3>
-                <p>Eksplorasi arus searah, hambatan, hingga medan elektromagnetik.</p>
-            </a> -->
-
-            <!-- <a href="gelombang/index.html" class="card">
-                <div class="icon-box"><i data-lucide="waves"></i></div>
-                <h3>Gelombang</h3>
-                <p>Memahami osilasi, getaran harmonik, dan propagasi gelombang.</p>
-            </a> -->
-
             <a href="cahaya/index.html" class="card">
                 <div class="icon-box"><i data-lucide="sun"></i></div>
                 <h3>Cahaya</h3>
@@ -209,12 +257,7 @@
                 <p>Teori relativitas, kuantum, dan struktur atomik masa depan.</p>
             </a>
 
-            <!-- <a href="praktikum/index.html" class="card" style="border-color: var(--accent);">
-                <div class="icon-box" style="background: var(--accent); color: white;"><i data-lucide="test-tube-2"></i></div>
-                <h3>Praktikum</h3>
-                <p>Panduan eksperimen laboratorium dan laporan virtual fisika.</p>
-            </a> -->
-        </div>
+            </div>
     </div>
 
     <footer>
